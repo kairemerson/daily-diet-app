@@ -5,5 +5,14 @@ export type AuthStackParamList = {
 
 export type AppStackParamList = {
   Home: undefined;
-  Statistics: undefined;
+  Statistics: {
+    percentage: number;
+    bestSequence: number;
+    totalMeals: number;
+    insideDiet: number;
+    outsideDiet: number;
+  };
+  MealForm: {
+    id: string
+  }
 };
