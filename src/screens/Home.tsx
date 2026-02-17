@@ -4,17 +4,14 @@ import { PercentageCard } from "@/src/components/PercentageCard";
 import { Header } from "@/src/components/Header";
 import { MealItem } from "../components/MealItem";
 import { Button } from "../components/Button";
-import { AppStackParamList } from "../@types/navigation";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-
-export type NavigationProps = NativeStackNavigationProp<AppStackParamList>
+import { AppNavigationProps } from "../routes/app.routes";
 
 
 export function Home() {
   const { signOut } = useAuth();
 
-  const navigation = useNavigation<NavigationProps>()
+  const navigation = useNavigation<AppNavigationProps>()
 
   return (
     <ScrollView className="flex-1 bg-white px-6 pt-14">

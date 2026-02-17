@@ -9,7 +9,7 @@ type AuthContextData = {
 const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<string | null>("teste");
+  const [user, setUser] = useState<string | null>(null);
 
   function signIn() {
     setUser("user-logado");
