@@ -11,12 +11,12 @@ module.exports = {
       colors: {
         red: {
           dark: "#BF3B44",
-          DEFAULT: "#F3BABD",
+          mid: "#F3BABD",
           light: "#F4E6E7",
         },
         green: {
           dark: "#639339",
-          DEFAULT: "#CBE4B4",
+          mid: "#CBE4B4",
           light: "#E5F0DB",
         },
         gray: {
@@ -39,8 +39,9 @@ module.exports = {
         sm: "14px",
         base: "16px",
         lg: "18px",
-        xl: "24px",
-        "2xl": "32px",
+        xl: "20px",
+        "2xl": "24px",
+        "3xl": "32px",
       },
       lineHeight: {
         tight: "130%",

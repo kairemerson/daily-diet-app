@@ -1,22 +1,30 @@
-import { useState } from "react";
-import { MaterialIcons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { colors } from "../theme/colors";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { HeaderPage } from "../components/HeaderPage";
 import DateTimePicker from "@react-native-community/datetimepicker" 
 
 import {Controller, useForm} from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MealFormData, mealSchema } from "./schema/schema";
-import { formatHour } from "../utils/formatHour";
+import { formatHourInput } from "../utils/formatHour";
 import { Button } from "../components/Button";
 import { AppNavigationProps } from "../routes/app.routes";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CreateMealDTO, createMealRequest, getMealByIdRequest, updateMealRequest } from "../services/meals";
+import Toast from "react-native-toast-message";
+import { buildISODate } from "../utils/buildISODate";
+import { AppStackParamList } from "../@types/navigation";
+import dayjs from "dayjs";
 
-
+type RouteProps = RouteProp<AppStackParamList, "MealForm">
 
 export function MealForm() {
     const navigation = useNavigation<AppNavigationProps>()
+    const route = useRoute<RouteProps>()
+    const id = route.params?.id
+    const isEditing = !!id
 
     const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -30,14 +38,89 @@ export function MealForm() {
         },
     })
 
-    function onSubmit(data: MealFormData) {
-        console.log(data);
-        
+    const {data: mealData, isLoading} = useQuery({
+        queryKey: ["meal", id],
+        queryFn: () => getMealByIdRequest(id!),
+        enabled: isEditing
+    })
+
+    const queryClient = useQueryClient()
+
+    const createMutation = useMutation({
+        mutationFn: createMealRequest,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["meals"]})
+            await queryClient.invalidateQueries({ queryKey: ["metrics"]})
+        },        
+    })
+
+    const updateMutation = useMutation({
+        mutationFn: (data: CreateMealDTO) => updateMealRequest(id!, data),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["meals"]})
+            await queryClient.invalidateQueries({ queryKey: ["metrics"]})
+        },  
+    })
+
+    async function onSubmit(data: MealFormData) {
+        const isoDate = buildISODate(data.date, data.hour)
+
+        try {
+            if(isEditing) {
+                await updateMutation.mutateAsync({
+                    ...data,
+                    date: isoDate,
+                    description: data.description ?? ""
+                })
+
+                Toast.show({
+                    type: "success",
+                    text1: "Refeição atualizada!",
+                });
+            } else {
+                await createMutation.mutateAsync({
+                    ...data, 
+                    date: isoDate, 
+                    description: data.description ?? ""
+                })
+               
+                Toast.show({
+                    type: "success",
+                    text1: "Refeição cadastrada!",
+                })
+
+                
+       
+            }
+
+            navigation.navigate("Feedback", {
+             isOnDiet: data.isOnDiet,
+            })
+
+        } catch {
+            Toast.show({
+                type: "error",
+                text1: "Erro ao cadastrar refeição",
+            })
+        }
     }
+
+    useEffect(() => {
+        if(mealData){
+            setValue("name", mealData.name);
+            setValue("description", mealData.description ?? "");
+            setValue("isOnDiet", mealData.isOnDiet);
+
+            const date = dayjs(mealData.date);
+
+            setValue("date", date.format("DD/MM/YYYY"));
+            setValue("hour", date.format("HH:mm"));
+        }
+    }, [mealData])
 
     return (
         <View className="flex-1 bg-white">
-            <HeaderPage variant="neutral"/>
+            <HeaderPage variant="neutral" title={isEditing ? "Editar refeição" : "Nova refeição"}/>
 
             <View className="flex-1 bg-white rounded-t-3xl px-6 py-12  -mt-4">
                 
@@ -101,7 +184,7 @@ export function MealForm() {
                     render={({ field: { onChange, value } }) => (
                     <TextInput
                         value={value}
-                        onChangeText={(text) => onChange(formatHour(text))}
+                        onChangeText={(text) => onChange(formatHourInput(text))}
                         keyboardType="numeric"
                         maxLength={5}
                         placeholder="Ex: 12:00"
@@ -138,7 +221,11 @@ export function MealForm() {
                 </View>
                 
                 <View className="mt-auto">
-                    <Button title="Cadastrar refeição" onPress={handleSubmit(onSubmit)}/>
+                    <Button 
+                        title={isEditing ? updateMutation.isPending ? "Salvando" : "Salvar alterações" : createMutation.isPending ? "Cadastrando" : "Cadastrar refeição"}
+                        onPress={handleSubmit(onSubmit)} 
+                        disabled={updateMutation.isPending || createMutation.isPending}
+                    />
 
                 </View>
 

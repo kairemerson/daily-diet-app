@@ -1,17 +1,28 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProps } from "../screens/Home";
+import { AppNavigationProps } from "../routes/app.routes";
+import { useQuery } from "@tanstack/react-query";
+import { getMealsMetricsRequest } from "../services/meals";
 
-type Props = {
-  percentage: number;
-};
 
-export function PercentageCard({ percentage }: Props) {
+export function PercentageCard() {
 
-  const navitagion = useNavigation<NavigationProps>()
+    const navitagion = useNavigation<AppNavigationProps>()
 
-  const isPositive = percentage >= 80;
+    const {data: metrics} = useQuery({
+      queryKey: ["metrics"],
+      queryFn: getMealsMetricsRequest,
+      initialData: {
+        percentageOnDiet: 0,
+        bestSequence: 0,
+        total: 0,
+        totalOnDiet: 0,
+        totalOffDiet: 0,
+      }
+    })
+
+    const isPositive = metrics.percentageOnDiet >= 90;
 
   return (
     <TouchableOpacity
@@ -19,16 +30,16 @@ export function PercentageCard({ percentage }: Props) {
         isPositive ? "bg-green-light" : "bg-red-light"
       }`}
       onPress={() => navitagion.navigate("Statistics", {
-        percentage: 90,
-        bestSequence: 22,
-        totalMeals: 109,
-        insideDiet: 99,
-        outsideDiet: 10,
+        percentage: metrics.percentageOnDiet,
+        bestSequence: metrics.bestSequence,
+        totalMeals: metrics.total,
+        insideDiet: metrics.totalOnDiet,
+        outsideDiet: metrics.totalOffDiet,
       })}
     >
       <View className="items-center">
         <Text className="text-2xl font-bold text-gray-900">
-          {percentage.toFixed(2)}%
+          {metrics.percentageOnDiet}%
         </Text>
         <Text className="text-gray-600 text-sm">
           das refeições dentro da dieta
@@ -36,7 +47,7 @@ export function PercentageCard({ percentage }: Props) {
       </View>
 
       <View className="absolute top-3 right-3">
-        <MaterialIcons name="arrow-upward" size={22} className="text-red-800"/>
+        <MaterialIcons name="arrow-upward" size={22} className="text-red-800 rotate-45"/>
       </View>
     </TouchableOpacity>
   );

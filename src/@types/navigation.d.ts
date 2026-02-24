@@ -3,7 +3,7 @@ export type AuthStackParamList = {
   SignUp: undefined;
 };
 
-export type AppStackParamList = {
+export type PatientStackParamList = {
   Home: undefined;
   Statistics: {
     percentage: number;
@@ -13,6 +13,19 @@ export type AppStackParamList = {
     outsideDiet: number;
   };
   MealForm: {
+    id?: string
+  } | undefined
+  Feedback: {
+    isOnDiet: boolean
+  }
+  MealDetails: {
     id: string
   }
 };
+
+export type AdminStackParamList = {
+    HomeAdmin: undefined
+    Dashboard: undefined;
+    PatientDetails: { patientId: string };
+    CreatePatient: undefined;
+}

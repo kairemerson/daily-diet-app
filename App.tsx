@@ -6,9 +6,13 @@ import {useFonts} from "expo-font"
 import {Nunito_400Regular, Nunito_700Bold} from "@expo-google-fonts/nunito"
 import { Routes } from './src/routes';
 import { AuthProvider } from './src/contexts/AuthContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Toast from "react-native-toast-message"
 
 export default function App() {
   const [fontsLoaded] = useFonts({Nunito_400Regular, Nunito_700Bold})
+
+  const queryClient = new QueryClient()
 
   if (!fontsLoaded) {
     return (
@@ -19,9 +23,13 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
-        <StatusBar style="auto" />
-        <Routes/>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+          <StatusBar style="auto" />
+          <Routes/>
+          <Toast/>
+      </AuthProvider>
+
+    </QueryClientProvider>
   );
 }

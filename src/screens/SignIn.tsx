@@ -8,6 +8,9 @@ import { SignInFormData, signInSchema } from "./schema/signInSchema";
 import AppInput from "../components/AppInput";
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigationProps } from "../routes/auth.routes";
+import { useMutation } from "@tanstack/react-query";
+import { signInRequest } from "../services/auth";
+import Toast from "react-native-toast-message";
 
 export function SignIn() {
   const { signIn } = useAuth();
@@ -18,9 +21,28 @@ export function SignIn() {
     resolver: zodResolver(signInSchema)
   })
 
+  const {mutate, isPending} = useMutation({
+    mutationFn: signInRequest,
+    onSuccess: (data) => {
+      signIn(data.user, data.token)
+
+      Toast.show({
+        type: "success",
+        text1: "Login realizado",
+        text2: "Bem-vindo de volta 👋",
+      });
+    },
+    onError: () => {
+      Toast.show({
+      type: "error",
+      text1: "Erro ao entrar",
+      text2: "Email ou senha inválidos",
+    });
+    }
+  })
+
   async function onSubmit(data: any) {
-    console.log("signin data: ", data);
-    
+    mutate(data)
   }
 
   return (
