@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, SectionList } from "react-native";
+import { View, Text, TouchableOpacity, SectionList, FlatList } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { Button } from "../components/Button";
 import { useNavigation } from "@react-navigation/native";
@@ -7,6 +7,28 @@ import {  getMealsRequest } from "../services/meals";
 import { groupMealsByDate } from "../utils/groupMealsByDate";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AdminStackParamList } from "../@types/navigation";
+import PatientCard from "../components/PatientCard";
+
+ const patients = [
+    {
+      id: "1",
+      name: "Ana Beatriz",
+      adherence: 92,
+      lastActivity: "Hoje",
+    },
+    {
+      id: "2",
+      name: "Carlos Silva",
+      adherence: 58,
+      lastActivity: "Ontem",
+    },
+    {
+      id: "3",
+      name: "Juliana Mendes",
+      adherence: 75,
+      lastActivity: "2 dias atrás",
+    },
+  ];
 
 export function HomeAdmin() {
   const { signOut } = useAuth();
@@ -34,6 +56,25 @@ export function HomeAdmin() {
         </TouchableOpacity>
       </View>
 
+      <Button title="Adicionar paciente" iconName="add" />
+
+      <Text className="text-2xl font-nunito_bold text-gray-1 mt-4 mb-6">
+        Pacientes
+      </Text>
+
+      <FlatList
+        data={patients}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        renderItem={({item}) => (
+          <PatientCard
+            name={item.name}
+            adherence={item.adherence}
+            lastActivity={item.lastActivity}
+            onPress={() => console.log("abrir detalhes", item.id)}
+          />
+        )}
+      />
     
     </SafeAreaView>
   );
