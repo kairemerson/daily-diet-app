@@ -27,5 +27,6 @@ export type AdminStackParamList = {
     HomeAdmin: undefined
     Dashboard: undefined;
     PatientDetails: { patientId: string };
-    CreatePatient: undefined;
+    PatientCreateForm: undefined;
+    NutritionistProfile: undefined;
 }

@@ -72,7 +72,7 @@ export function SignIn() {
 
       </View>
 
-      <Button title="Entrar" onPress={handleSubmit(onSubmit)}/>
+      <Button title="Entrar" onPress={handleSubmit(onSubmit)} disabled={isPending}/>
 
       <Text className="text-center text-gray-3 text-base mt-10 mb-2">Ainda não tem conta?</Text>
       <Button title="Criar conta" variant="secondary" onPress={() => navigation.navigate("SignUp")}/>

@@ -1,4 +1,4 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { PatientStackParamList } from "../@types/navigation";
 import { Home } from "../screens/Home";
@@ -9,6 +9,8 @@ import MealDetails from "../screens/MealDetails";
 
 
 const Stack = createNativeStackNavigator<PatientStackParamList>();
+
+export type PatientNavigationProps = NativeStackNavigationProp<PatientStackParamList>;
 
 export function PatientRoutes() {
   return (

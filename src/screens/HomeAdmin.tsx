@@ -8,38 +8,23 @@ import { groupMealsByDate } from "../utils/groupMealsByDate";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AdminStackParamList } from "../@types/navigation";
 import PatientCard from "../components/PatientCard";
+import { useBottomSheet } from "../contexts/BottomSheetContext";
+import { PatientCreateForm } from "../components/PatientCreateForm";
+import { AdminNavigationProps } from "../routes/admin.routes";
+import { getPatientsRequest } from "../services/patients";
 
- const patients = [
-    {
-      id: "1",
-      name: "Ana Beatriz",
-      adherence: 92,
-      lastActivity: "Hoje",
-    },
-    {
-      id: "2",
-      name: "Carlos Silva",
-      adherence: 58,
-      lastActivity: "Ontem",
-    },
-    {
-      id: "3",
-      name: "Juliana Mendes",
-      adherence: 75,
-      lastActivity: "2 dias atrás",
-    },
-  ];
 
 export function HomeAdmin() {
-  const { signOut } = useAuth();
 
-  const navigation = useNavigation<AdminStackParamList>()
+  const navigation = useNavigation<AdminNavigationProps>()
 
-  const {data: meals = [], isLoading} = useQuery({
-    queryKey: ["meals"],
-    queryFn: getMealsRequest,
-    select: (data) => groupMealsByDate(data)
+  const {data: patients = [], isLoading} = useQuery({
+    queryKey: ["patients"],
+    queryFn: getPatientsRequest,
   })
+
+  // console.log("HomeAdmin = patients: ", patients);
+  
     
   return (
     <SafeAreaView className="flex-1 bg-white px-6">
@@ -50,13 +35,14 @@ export function HomeAdmin() {
           Daily Diet
         </Text>
 
-        <TouchableOpacity onPress={() => signOut()} >
+        <TouchableOpacity onPress={() => navigation.navigate("NutritionistProfile")} >
           <View className="w-10 h-10 rounded-full bg-gray-300" />
 
         </TouchableOpacity>
       </View>
 
-      <Button title="Adicionar paciente" iconName="add" />
+      <Button title="Adicionar paciente" iconName="add" onPress={() => navigation.navigate("PatientCreateForm")}/>
+      
 
       <Text className="text-2xl font-nunito_bold text-gray-1 mt-4 mb-6">
         Pacientes
@@ -68,10 +54,10 @@ export function HomeAdmin() {
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => (
           <PatientCard
-            name={item.name}
-            adherence={item.adherence}
-            lastActivity={item.lastActivity}
-            onPress={() => console.log("abrir detalhes", item.id)}
+            name={item.user.name}
+            adherence={80}
+            lastActivity={"hoje"}
+            onPress={() => navigation.navigate("PatientDetails", {patientId: item.id})}
           />
         )}
       />

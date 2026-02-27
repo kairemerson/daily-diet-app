@@ -10,18 +10,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { MealFormData, mealSchema } from "./schema/schema";
 import { formatHourInput } from "../utils/formatHour";
 import { Button } from "../components/Button";
-import { AppNavigationProps } from "../routes/app.routes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateMealDTO, createMealRequest, getMealByIdRequest, updateMealRequest } from "../services/meals";
 import Toast from "react-native-toast-message";
 import { buildISODate } from "../utils/buildISODate";
-import { AppStackParamList } from "../@types/navigation";
 import dayjs from "dayjs";
+import { PatientNavigationProps } from "../routes/patient.routes";
+import { PatientStackParamList } from "../@types/navigation";
 
-type RouteProps = RouteProp<AppStackParamList, "MealForm">
+type RouteProps = RouteProp<PatientStackParamList, "MealForm">
 
 export function MealForm() {
-    const navigation = useNavigation<AppNavigationProps>()
+    const navigation = useNavigation<PatientNavigationProps>()
     const route = useRoute<RouteProps>()
     const id = route.params?.id
     const isEditing = !!id

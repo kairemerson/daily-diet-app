@@ -5,16 +5,16 @@ import { Header } from "@/src/components/Header";
 import { MealItem } from "../components/MealItem";
 import { Button } from "../components/Button";
 import { useNavigation } from "@react-navigation/native";
-import { AppNavigationProps } from "../routes/app.routes";
 import { useQuery } from "@tanstack/react-query";
 import {  getMealsRequest } from "../services/meals";
 import { groupMealsByDate } from "../utils/groupMealsByDate";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { PatientNavigationProps } from "../routes/patient.routes";
 
 export function Home() {
   const { signOut } = useAuth();
 
-  const navigation = useNavigation<AppNavigationProps>()
+  const navigation = useNavigation<PatientNavigationProps>()
 
   const {data: meals = [], isLoading} = useQuery({
     queryKey: ["meals"],
