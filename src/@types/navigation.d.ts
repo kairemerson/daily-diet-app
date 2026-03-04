@@ -14,6 +14,7 @@ export type PatientStackParamList = {
   };
   MealForm: {
     id?: string
+    mealPlanItemId?: string
   } | undefined
   Feedback: {
     isOnDiet: boolean
@@ -29,4 +30,5 @@ export type AdminStackParamList = {
     PatientDetails: { patientId: string };
     PatientCreateForm: undefined;
     NutritionistProfile: undefined;
+    CreateMealPlan: { patientId: string };
 }

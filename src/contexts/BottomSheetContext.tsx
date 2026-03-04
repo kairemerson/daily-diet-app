@@ -16,27 +16,29 @@ import {
 import { ScrollView } from "react-native";
 
 type BottomSheetContextData = {
-  open: (content: ReactNode, snapPoints?: string[]) => void;
+  open: (render: () => ReactNode, snapPoints?: string[]) => void;
   close: () => void;
 };
 
-const BottomSheetContext = createContext({} as BottomSheetContextData);
+const BottomSheetContext = createContext<BottomSheetContextData | null>(null);
 
 export function BottomSheetProvider({
   children,
 }: {
   children: ReactNode;
 }) {
+  // console.log("BottomSheetContext loaded");
+  
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  const [content, setContent] = useState<ReactNode>(null);
+  const [renderContent, setRenderContent] = useState<(() => ReactNode) | null>(null);
   const [snapPoints, setSnapPoints] = useState<string[]>(["50%"]);
 
   const memoizedSnapPoints = useMemo(() => snapPoints, [snapPoints]);
 
   const open = useCallback(
-    (component: ReactNode, customSnapPoints?: string[]) => {
-      setContent(component);
+    (render: () => ReactNode, customSnapPoints?: string[]) => {
+      setRenderContent(() => render);
 
       if (customSnapPoints) {
         setSnapPoints(customSnapPoints);
@@ -51,6 +53,8 @@ export function BottomSheetProvider({
 
   const close = useCallback(() => {
     bottomSheetModalRef.current?.dismiss();
+    setRenderContent(null);
+
   }, []);
 
   const renderBackdrop = useCallback(
@@ -78,7 +82,7 @@ export function BottomSheetProvider({
         
       >
         <BottomSheetView style={{ flex: 1, marginBottom: 20 }}>
-          {content}
+          {renderContent?.()}
         </BottomSheetView>
       </BottomSheetModal>
     </BottomSheetContext.Provider>
@@ -86,5 +90,13 @@ export function BottomSheetProvider({
 }
 
 export function useBottomSheet() {
-  return useContext(BottomSheetContext);
+  const context = useContext(BottomSheetContext)
+
+  // console.log("Context value:", context)
+
+  if (!context) {
+    throw new Error("useBottomSheet must be used within BottomSheetProvider")
+  }
+
+  return context
 }

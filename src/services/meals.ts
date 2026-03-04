@@ -5,6 +5,11 @@ export type CreateMealDTO = {
     description?: string
     date: string
     isOnDiet: boolean
+    mealPlanItemId?: string,
+    consumedCalories?: number
+    consumedProtein?: number
+    consumedCarbs?: number
+    consumedFat?: number
 }
 
 export type Meal = {

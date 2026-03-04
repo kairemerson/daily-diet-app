@@ -37,11 +37,10 @@ export default function App() {
                 <Routes/>
               <Toast/>
             </AuthProvider>
-            </BottomSheetProvider>
+          </BottomSheetProvider>
 
         </BottomSheetModalProvider>
-
-      </QueryClientProvider>
+        </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

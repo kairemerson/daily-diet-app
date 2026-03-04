@@ -6,7 +6,7 @@ import { Platform } from "react-native";
 //     ? "http://10.0.2.2:3333"
 //     : "http://localhost:3333";
 
-const BASE_URL = "http://192.168.1.101:3333"
+const BASE_URL = "http://192.168.1.102:3333"
 
 export const api = axios.create({
   baseURL: BASE_URL,

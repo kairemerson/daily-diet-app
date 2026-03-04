@@ -1,24 +1,23 @@
 import { ActivityIndicator, Text, View } from 'react-native'
 import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { HeaderPage } from '../components/HeaderPage'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { AppStackParamList } from '../@types/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteMealRequest, getMealByIdRequest } from '../services/meals';
 import dayjs from 'dayjs';
 import { Button } from '../components/Button';
-import { AppNavigationProps } from '../routes/app.routes';
 import { ConfirmModal } from '../components/ConfirmModal';
 import Toast from 'react-native-toast-message';
+import { PatientStackParamList } from '../@types/navigation';
+import { PatientNavigationProps } from '../routes/patient.routes';
 
-type RouteProps = RouteProp<AppStackParamList, "MealDetails">;
+type RouteProps = RouteProp<PatientStackParamList, "MealDetails">;
 
 
 export default function MealDetails() {
     const [modalVisible, setModalVisible] = useState(false)
 
-    const navigation = useNavigation<AppNavigationProps>()
+    const navigation = useNavigation<PatientNavigationProps>()
     const route = useRoute<RouteProps>()
     const {id} = route.params
 

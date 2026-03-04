@@ -10,17 +10,26 @@ import {  getMealsRequest } from "../services/meals";
 import { groupMealsByDate } from "../utils/groupMealsByDate";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PatientNavigationProps } from "../routes/patient.routes";
+import { getPatientDashboard } from "../services/patients";
 
 export function Home() {
   const { signOut } = useAuth();
 
   const navigation = useNavigation<PatientNavigationProps>()
 
-  const {data: meals = [], isLoading} = useQuery({
-    queryKey: ["meals"],
-    queryFn: getMealsRequest,
-    select: (data) => groupMealsByDate(data)
+  // const {data: meals = [], isLoading} = useQuery({
+  //   queryKey: ["meals"],
+  //   queryFn: getMealsRequest,
+  //   select: (data) => groupMealsByDate(data)
+  // })
+
+  const {data: dashboard, isLoading: isLoadingPatientDashboard} = useQuery({
+    queryKey: ["patient-dashboard"],
+    queryFn: getPatientDashboard,
   })
+
+  console.log("Home => dashboard", dashboard);
+  
     
   return (
     <SafeAreaView className="flex-1 bg-white px-6">
@@ -38,7 +47,7 @@ export function Home() {
       </View>
 
       {/* Percentage */}
-      <PercentageCard />
+      {/* <PercentageCard /> */}
 
       {/* Button */}
       <Text className="text-gray-600 mb-2">
@@ -49,7 +58,7 @@ export function Home() {
 
       {/* List */}
       <SectionList
-        sections={meals}
+        sections={[]}
         keyExtractor={(item) => item.id}
         renderItem={({item}) => (
           <MealItem id={item.id} title={item.name} time={item.date} isOnDiet={item.isOnDiet}/>

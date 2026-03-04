@@ -16,7 +16,7 @@ export default function AppInput({control, name, label, icon, secureTextEntry, .
 
     const [isSecure, setIsSecure] = useState(secureTextEntry);
   return (
-    <View className='mb-4'>
+    <View className='mb-2'>
       {label && (
         <Text className='font-nunito_bold text-base text-gray-1 mb-1'>
             {label}

@@ -26,12 +26,12 @@ export function Button({title, iconName, onPress, variant="primary", className= 
                     justify-center
                     gap-2
                     py-4
-                    rounded-md
-                    border
+                    rounded-2xl
+                    
                 ${
                     isPrimary
-                        ? "bg-gray-2 border-gray-2"
-                        : "bg-white border-gray-2"
+                        ? "bg-green-dark"
+                        : "bg-gray-6 border border-gray-5"
                     }
                 ${className}
             `}
@@ -48,7 +48,7 @@ export function Button({title, iconName, onPress, variant="primary", className= 
             <Text
                 className={`
                 font-nunito_bold
-                text-sm
+                
                 ${
                     isPrimary
                     ? "text-white"
