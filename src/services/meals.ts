@@ -4,6 +4,7 @@ export type CreateMealDTO = {
     name: string
     description?: string
     date: string
+    time: string
     isOnDiet: boolean
     mealPlanItemId?: string,
     consumedCalories?: number
@@ -17,9 +18,17 @@ export type Meal = {
   name: string
   description: string
   date: string
+  time: string
   isOnDiet: boolean
   createdAt: string
   updatedAt: string
+}
+
+export type MealWithMacrosResponse = Meal & {
+    consumedCalories?: number
+    consumedProtein?: number
+    consumedCarbs?: number
+    consumedFat?: number
 }
 
 interface MetricsResponse {
@@ -30,6 +39,11 @@ interface MetricsResponse {
   percentageOnDiet: number
 }
 
+export type MealsSection = {
+    title: string
+    data: Meal[]
+}
+
 
 export async function createMealRequest(data: CreateMealDTO): Promise<Meal> {
     const response = await api.post("/meals", data)
@@ -37,13 +51,19 @@ export async function createMealRequest(data: CreateMealDTO): Promise<Meal> {
     return response.data
 }
 
-export async function getMealsRequest(): Promise<Meal[]> {
+export async function getMealsRequest(): Promise<MealsSection[]> {
     const response = await api.get("/meals")
 
     return response.data
 }
 
-export async function getMealByIdRequest(id: string): Promise<Meal> {
+export async function getMealsByPatientIdRequest(patientId: string): Promise<MealsSection[]> {
+    const response = await api.get(`/meals/patient/${patientId}`)
+
+    return response.data
+}
+
+export async function getMealByIdRequest(id: string): Promise<MealWithMacrosResponse> {
     const response = await api.get(`/meals/${id}`)
 
     return response.data

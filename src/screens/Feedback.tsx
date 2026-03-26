@@ -3,10 +3,11 @@ import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button } from '../components/Button'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import { AppNavigationProps } from '../routes/app.routes'
-import { AppStackParamList } from '../@types/navigation'
+import { PatientStackParamList } from '../@types/navigation'
+import { PatientNavigationProps } from '../routes/patient.routes'
 
-type RouteProps = RouteProp<AppStackParamList, "Feedback">;
+
+type RouteProps = RouteProp<PatientStackParamList, "Feedback">;
 
 
 export default function Feedback() {
@@ -14,7 +15,7 @@ export default function Feedback() {
     const route = useRoute<RouteProps>()
     const {isOnDiet} = route.params
 
-    const navigation = useNavigation<AppNavigationProps>()    
+    const navigation = useNavigation<PatientNavigationProps>()    
     
   return (
     <SafeAreaView className='flex-1 bg-white pt-32 px-6 items-center'>
@@ -40,7 +41,7 @@ export default function Feedback() {
       )}
 
       <View className='flex-row px-20'>
-        <Button title='Ir para página inicial ' onPress={() => navigation.navigate("Home")}/>
+        <Button title='Ir para página inicial ' onPress={() => navigation.navigate("PatientTabs")}/>
       </View>
     </SafeAreaView>
   )

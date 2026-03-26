@@ -13,19 +13,19 @@ import { Button } from "../components/Button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateMealDTO, createMealRequest, getMealByIdRequest, updateMealRequest } from "../services/meals";
 import Toast from "react-native-toast-message";
-import { buildISODate } from "../utils/buildISODate";
-import dayjs from "dayjs";
 import { PatientNavigationProps } from "../routes/patient.routes";
 import { PatientStackParamList } from "../@types/navigation";
 import { MaterialIcons } from "@expo/vector-icons";
 import { formatInteger } from "../utils/formatInteger";
 import { formatDecimal } from "../utils/formatDecimal";
 import { getMealPlanItemByIdRequest } from "../services/mealPlanItems";
+import dayjs from "../lib/dayjs";
 
 type RouteProps = RouteProp<PatientStackParamList, "MealForm">
 
 export function MealForm() {
     const navigation = useNavigation<PatientNavigationProps>()
+
     const route = useRoute<RouteProps>()
     const id = route.params?.id
     const mealPlanItemId = route.params?.mealPlanItemId
@@ -39,7 +39,7 @@ export function MealForm() {
             name: "",
             description: "",
             date: "",
-            hour: "",
+            time: "",
         },
     })
 
@@ -54,6 +54,7 @@ export function MealForm() {
         queryFn: () => getMealPlanItemByIdRequest(mealPlanItemId!),
         enabled: !!mealPlanItemId,
     });
+    console.log("MealForm => mealPlanItemData: ", {mealPlanItemData, mealData});
     
 
     const queryClient = useQueryClient()
@@ -73,14 +74,12 @@ export function MealForm() {
     })
 
     async function onSubmit(data: MealFormData) {
-        const isoDate = buildISODate(data.date, data.hour)
 
         try {
             if(isEditing) {
                 await updateMutation.mutateAsync({
                     ...data,
-                    date: isoDate,
-                    description: data.description ?? ""
+                    description: data.description ?? "",
                 })
 
                 Toast.show({
@@ -90,28 +89,28 @@ export function MealForm() {
             } else {
                 await createMutation.mutateAsync({
                     ...data, 
-                    date: isoDate, 
                     description: data.description ?? "",
                     mealPlanItemId
                 })
-               
+                // console.log("MealForm => data: ", data);
+                
                 Toast.show({
                     type: "success",
                     text1: "Refeição cadastrada!",
                 })
 
-                
-       
             }
 
             navigation.navigate("Feedback", {
-             isOnDiet: data.isOnDiet,
+                isOnDiet: data.isOnDiet,
             })
 
-        } catch {
+        } catch(error: any) {
             Toast.show({
                 type: "error",
                 text1: "Erro ao cadastrar refeição",
+                text2: error.response.data.message,
+                
             })
         }
     }
@@ -122,10 +121,14 @@ export function MealForm() {
             setValue("description", mealData.description ?? "");
             setValue("isOnDiet", mealData.isOnDiet);
 
-            const date = dayjs(mealData.date);
+            setValue("date", dayjs(mealData.date).format("DD/MM/YYYY"));
+            setValue("time", mealData.time);
 
-            setValue("date", date.format("DD/MM/YYYY"));
-            setValue("hour", date.format("HH:mm"));
+            // Pré-preencher metas como referência visual
+            setValue("consumedCalories", mealData.consumedCalories ?? 0);
+            setValue("consumedProtein", mealData.consumedProtein ?? 0);
+            setValue("consumedCarbs", mealData.consumedCarbs ?? 0);
+            setValue("consumedFat", mealData.consumedFat ?? 0);
         }
     }, [mealData])
 
@@ -134,9 +137,8 @@ export function MealForm() {
             setValue("name", mealPlanItemData.name);
             setValue("description", mealPlanItemData.description ?? "");
 
-            const time = dayjs(mealPlanItemData.time);
-            setValue("hour", time.format("HH:mm"));
-            setValue("date", dayjs().format("DD/MM/YYYY"));
+            setValue("time", mealPlanItemData.time);
+            setValue("date", dayjs().format("DD/MM/YYYY"), {shouldValidate: true});
 
             // Pré-preencher metas como referência visual
             setValue("consumedCalories", mealPlanItemData.targetCalories ?? 0);
@@ -194,20 +196,22 @@ export function MealForm() {
                 <TouchableOpacity onPress={()=> setShowDatePicker(true)} className="bg-white border border-gray-5 rounded-md p-4">
                     <Text>{watch("date") || "Selecionar data"}</Text>
                 </TouchableOpacity>
-
+                {/*possivel erro: Se quiser, posso também te mostrar um bug muito comum que acontece com React Native + date picker + timezone, 
+                que provavelmente vai aparecer no seu app quando usuários registrarem refeições perto da meia-noite. */}
                 {showDatePicker && (
                     <DateTimePicker
                         mode="date"
                         value={
-                            watch("date")
-                                ? dayjs(watch("date"), "DD/MM/YYYY").toDate()
-                                : new Date()
+                            watch("date") && dayjs(watch("date"), "DD/MM/YYYY", true).isValid()
+                            ? dayjs(watch("date"), "DD/MM/YYYY").toDate()
+                            : new Date()
                         }
-                        onChange={(event, selectedDate)=> {
+                        onChange={(event, selectedDate) => {
                             setShowDatePicker(false)
-                            if(selectedDate) {
-                                const formatted = selectedDate.toLocaleDateString("pt-BR")
-                                setValue("date", formatted)
+
+                            if (selectedDate) {
+                            const formatted = dayjs(selectedDate).format("DD/MM/YYYY")
+                            setValue("date", formatted)
                             }
                         }}
                     />
@@ -219,7 +223,7 @@ export function MealForm() {
                 <Text className="font-nunito_bold text-base mt-2 mb-1">Hora</Text>
                 <Controller
                     control={control}
-                    name="hour"
+                    name="time"
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             value={value}
@@ -232,8 +236,8 @@ export function MealForm() {
                         />
                     )}
                 />
-                {errors.hour && (
-                    <Text className="text-red-dark mt-1">{errors.hour.message}</Text>
+                {errors.time && (
+                    <Text className="text-red-dark mt-1">{errors.time.message}</Text>
                 )}
 
                 <Text className="font-nunito_bold text-base mt-3 mb-1">Está dentro da dieta?</Text>
@@ -425,6 +429,7 @@ export function MealForm() {
                     <Button 
                         title={isEditing ? updateMutation.isPending ? "Salvando" : "Salvar alterações" : createMutation.isPending ? "Cadastrando" : "Cadastrar refeição"}
                         onPress={handleSubmit(onSubmit)} 
+                        isLoading={isSubmitting}
                         disabled={updateMutation.isPending || createMutation.isPending || isSubmitting}
                     />
 

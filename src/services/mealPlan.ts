@@ -12,10 +12,21 @@ export type CreateMealPlanDTO = {
   endDate?: string
 }
 
+export type UpdateMealPlanDTO = {
+  patientId: string
+  title: string
+  description?: string
+  caloriesTarget?: number
+  proteinTarget?: number
+  carbsTarget?: number
+  fatTarget?: number
+  startDate: string
+  endDate?: string
+}
+
 export type MealPlan = {
   id: string
   patientId: string
-  nutritionistId: string
   title: string
   description: string | null
   caloriesTarget: number | null
@@ -30,14 +41,14 @@ export type MealPlan = {
 }
 
 export type MealPlanWithMealPlanItems = MealPlan & {
-    meals: {
+    mealPlanItems: {
         id: string;
         description: string | null;
         name: string;
-        calories: number | null;
-        protein: number | null;
-        carbs: number | null;
-        fat: number | null;
+        targetCalories: number | null;
+        targetProtein: number | null;
+        targetCarbs: number | null;
+        targetFat: number | null;
         mealPlanId: string;
         time: string;
     }[];
@@ -49,8 +60,20 @@ export async function createMealPlanRequest(data: CreateMealPlanDTO): Promise<Me
     return response.data
 }
 
-export async function getMealPlanRequest(patientId: string): Promise<MealPlanWithMealPlanItems[]> {
-  const response = await api.get<MealPlanWithMealPlanItems[]>(`/meal-plans/${patientId}`)
+export async function getMealPlansByPatientRequest(patientId: string): Promise<MealPlanWithMealPlanItems[]> {
+  const response = await api.get<MealPlanWithMealPlanItems[]>(`/patients/${patientId}/meal-plans`)
+
+  return response.data
+}
+
+export async function getMealPlanByIdRequest(mealPlanId: string): Promise<MealPlanWithMealPlanItems> {
+  const response = await api.get(`/meal-plans/${mealPlanId}`)
+
+  return response.data
+}
+
+export async function updateMealPlanRequest(id: string, data: UpdateMealPlanDTO): Promise<MealPlan> {
+  const response = await api.put<MealPlan>(`/meal-plans/${id}`, data)
 
   return response.data
 }

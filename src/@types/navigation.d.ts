@@ -4,6 +4,7 @@ export type AuthStackParamList = {
 };
 
 export type PatientStackParamList = {
+  PatientTabs: undefined
   Home: undefined;
   Statistics: {
     percentage: number;
@@ -30,5 +31,9 @@ export type AdminStackParamList = {
     PatientDetails: { patientId: string };
     PatientCreateForm: undefined;
     NutritionistProfile: undefined;
-    CreateMealPlan: { patientId: string };
+    CreateMealPlan: { patientId: string, mealPlanId?: string };
+    MealPlansHistory: {patientId: string}
+    MealHistory: {patientId: string}
+    MealPlanDetails: {mealPlanId: string}
+
 }

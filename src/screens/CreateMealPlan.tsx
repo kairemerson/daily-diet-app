@@ -1,5 +1,5 @@
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { HeaderPage } from '../components/HeaderPage'
 import AppInput from '../components/AppInput'
 import z from 'zod'
@@ -9,16 +9,14 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { colors } from '../theme/colors'
 import { formatDecimal } from '../utils/formatDecimal'
 import { formatInteger } from '../utils/formatInteger'
-import { formatDate } from '../utils/formatDate'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createMealPlanRequest, MealPlan } from '../services/mealPlan'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {  createMealPlanRequest, getMealPlanByIdRequest, UpdateMealPlanDTO, updateMealPlanRequest } from '../services/mealPlan'
 import { Button } from '../components/Button'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { AdminStackParamList } from '../@types/navigation'
 import { AdminNavigationProps } from '../routes/admin.routes'
 import DateTimePicker from "@react-native-community/datetimepicker" 
 import Toast from 'react-native-toast-message'
-import dayjs from 'dayjs'
 
 const createMealPlanFormSchema = z.object({
     title: z.string("Infome o nome do plano!").min(3, "O nome precisa ter pelo menos 3 caracteres!"),
@@ -51,7 +49,8 @@ export default function CreateMealPlan() {
     const navigation = useNavigation<AdminNavigationProps>()
 
     const route = useRoute<RouteProps>()
-    const {patientId} = route.params
+    const {patientId, mealPlanId} = route.params
+    const isEditing = !!mealPlanId
 
     const {control, handleSubmit, setValue, watch, formState: {errors}} = useForm<CreateMealPlanFormData>({
         resolver: zodResolver(createMealPlanFormSchema),
@@ -65,55 +64,108 @@ export default function CreateMealPlan() {
         }
     })
 
+    const {data: mealPlanData, isLoading} = useQuery({
+        queryKey: ["meal-plan", mealPlanId],
+        queryFn: () => getMealPlanByIdRequest(mealPlanId!),
+        enabled: isEditing
+    })
+ 
     const queryClient = useQueryClient()
 
-    const {mutate} = useMutation({
+    const createMutation = useMutation({
         mutationFn: createMealPlanRequest,
-        onSuccess: (newMealPlan) => {
-            queryClient.setQueryData<MealPlan[]>(
-                ["meal-plans", patientId],
-                (old) => old ? [newMealPlan, ...old] : [newMealPlan]
-            )
-            Toast.show({
-                type: "success",
-                text1: "Plano alimentar criado com sucesso!",
-            });
-            navigation.goBack()
-        },
-        onError: (error: any) => {
-            console.log("Error", error);
-            console.log("Error", error.response);
-            console.log("Error", error.response.data);
-              
-            Toast.show({
-                type: "error",
-                text1: "Erro ao criar plano alimentar!",
-                text2: error.response.data.message
-            });
-        }
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({  queryKey: ["dashboard", patientId]})
+        },        
     })
 
-    async function onSubmit(data: CreateMealPlanFormData) {
-        const parsed = {
-            ...data,
-            description: data.description || undefined,
-            caloriesTarget: data.caloriesTarget
-                ? Number(data.caloriesTarget)
-                : undefined,
-            proteinTarget: data.proteinTarget
-                ? Number(data.proteinTarget)
-                : undefined,
-            carbsTarget: data.carbsTarget
-                ? Number(data.carbsTarget)
-                : undefined,
-            fatTarget: data.fatTarget
-                ? Number(data.fatTarget)
-                : undefined,
-        }
+    const updateMutation = useMutation({
+        mutationFn: (data: UpdateMealPlanDTO) => updateMealPlanRequest(mealPlanId!, data),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({  queryKey: ["dashboard", patientId]})
+            await queryClient.invalidateQueries({  queryKey: ["meal-plan", mealPlanId]})
+        },  
+    })
 
-        console.log("CreateMealPLan = data: ", {patientId, ...parsed});
+    // console.log("CreateMealPlan => mealPlanData: ", mealPlanData);
+    
+    useEffect(() => {
+        if(mealPlanData){
+            setValue("title", mealPlanData.title);
+            setValue("description", mealPlanData.description ?? "");
+
+            setValue("startDate", mealPlanData.startDate);
+            setValue("endDate", mealPlanData.endDate ?? undefined);
+
+            // Pré-preencher metas como referência visual
+            setValue("caloriesTarget", mealPlanData.caloriesTarget?.toString() ?? "");
+            setValue("proteinTarget", mealPlanData.proteinTarget?.toString() ?? "");
+            setValue("carbsTarget", mealPlanData.carbsTarget?.toString() ?? '');
+            setValue("fatTarget", mealPlanData.fatTarget?.toString() ?? "");
+        }
+    }, [mealPlanData])
+
+    async function onSubmit(data: CreateMealPlanFormData) {
         
-        mutate({patientId, ...parsed})
+        try {
+            if(isEditing) {
+                await updateMutation.mutateAsync({
+                    ...data,
+                    caloriesTarget: data.caloriesTarget
+                        ? Number(data.caloriesTarget)
+                        : undefined,
+                    proteinTarget: data.proteinTarget
+                        ? Number(data.proteinTarget)
+                        : undefined,
+                    carbsTarget: data.carbsTarget
+                        ? Number(data.carbsTarget)
+                        : undefined,
+                    fatTarget: data.fatTarget
+                        ? Number(data.fatTarget)
+                        : undefined,
+                    patientId
+                })
+
+                Toast.show({
+                    type: "success",
+                    text1: "Plano alimentar atualizada!",
+                });
+
+                navigation.navigate("HomeAdmin")
+            } else  {
+                await createMutation.mutateAsync({
+                    ...data,
+                    caloriesTarget: data.caloriesTarget
+                        ? Number(data.caloriesTarget)
+                        : undefined,
+                    proteinTarget: data.proteinTarget
+                        ? Number(data.proteinTarget)
+                        : undefined,
+                    carbsTarget: data.carbsTarget
+                        ? Number(data.carbsTarget)
+                        : undefined,
+                    fatTarget: data.fatTarget
+                        ? Number(data.fatTarget)
+                        : undefined,
+                    patientId
+                })
+
+                Toast.show({
+                    type: "success",
+                    text1: "Plano alimentar cadastrado!",
+                });
+
+                navigation.navigate("HomeAdmin")
+            }
+        } catch (error: any) {
+            Toast.show({
+                type: "error",
+                text1: "Erro ao cadastrar refeição",
+                text2: error.response.data.message,
+                
+            })
+        }
+        
     }
 
   return (
@@ -124,7 +176,7 @@ export default function CreateMealPlan() {
           className="px-6 pt-6 "
         >
 
-            <View className='mb-16'>
+            <View className='mb-64'>
                  <AppInput 
                     control={control}
                     name="title"
@@ -177,6 +229,9 @@ export default function CreateMealPlan() {
                         </View>
                     )}
                 />
+                {errors.caloriesTarget && (
+                    <Text className="text-red-dark mt-1">{errors.caloriesTarget.message}</Text>
+                )}
 
 
                 <Text className="text-base font-nunito_bold mb-2 mt-2">
@@ -212,6 +267,9 @@ export default function CreateMealPlan() {
                         </View>
                     )}
                 />
+                {errors.proteinTarget && (
+                    <Text className="text-red-dark mt-1">{errors.proteinTarget.message}</Text>
+                )}
 
                 <Text className="text-base font-nunito_bold mb-2 mt-2">
                     Carboidratos
@@ -246,6 +304,9 @@ export default function CreateMealPlan() {
                         </View>
                     )}
                 />
+                {errors.carbsTarget && (
+                    <Text className="text-red-dark mt-1">{errors.carbsTarget.message}</Text>
+                )}
 
                 <Text className="text-base font-nunito_bold mb-2 mt-2">
                     Gordura
@@ -280,6 +341,9 @@ export default function CreateMealPlan() {
                         </View>
                     )}
                 />
+                {errors.fatTarget && (
+                    <Text className="text-red-dark mt-1">{errors.fatTarget.message}</Text>
+                )}
 
                 <Text className="text-base font-nunito_bold mb-2 mt-2">
                     Data inicio

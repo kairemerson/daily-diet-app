@@ -2,6 +2,7 @@ import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { AdherenceBadge } from './AdherenceBadge'
 import { MaterialIcons } from '@expo/vector-icons'
 import { colors } from '../theme/colors'
+import dayjs from 'dayjs'
 
 type Props = {
     name: string
@@ -21,7 +22,7 @@ export default function PatientCard({adherence, name, lastActivity, onPress}: Pr
         
         <View className="flex-row items-center gap-3 flex-1">
             <View className='w-12 h-12 bg-gray-5 rounded-full items-center justify-center'>
-                <MaterialIcons name='person' size={24} color={colors.gray[2]}/>
+                <MaterialIcons name='person' size={24} color={colors.gray[4]}/>
 
             </View>
 
@@ -31,7 +32,7 @@ export default function PatientCard({adherence, name, lastActivity, onPress}: Pr
             </Text>
 
             <Text className="text-xs text-gray-3 mt-1">
-              Última atividade: {lastActivity}
+              Última atividade: {lastActivity && dayjs(lastActivity).format("DD/MM/YYYY - HH:mm")}
             </Text>
           </View>
         </View>

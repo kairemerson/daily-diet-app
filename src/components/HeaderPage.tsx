@@ -31,7 +31,7 @@ export function HeaderPage({variant="primary", title}: HeaderPageProps) {
     const styles = VARIANT_STYLES[variant]
     
   return (
-    <View className={`p-6 pb-6 pt-12 flex-row ${styles.container}`}>
+    <View className={`px-4 pb-8 pt-12 flex-row ${styles.container}`}>
         
         <View className='flex-1'>
             <TouchableOpacity activeOpacity={1} className="flex-1 ml-1 mr-auto p-2 pl-0 absolute -top-1 z-10" onPress={() => navigation.goBack()}>

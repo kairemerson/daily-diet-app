@@ -12,20 +12,19 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Toast from "react-native-toast-message"
 import { BottomSheetProvider } from './src/contexts/BottomSheetContext';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { AnimatedSplash } from './src/components/AnimatedSplash';
+import { useState } from 'react';
+
 
 export default function App() {
   const [fontsLoaded] = useFonts({Nunito_400Regular, Nunito_700Bold})
-
   const queryClient = new QueryClient()
 
-  if (!fontsLoaded) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-      </View>
-    );
-  }
+   const [showSplash, setShowSplash] = useState(true);
 
+    if (showSplash) {
+      return <AnimatedSplash onFinish={() => setShowSplash(false)} />;
+    }
   return (
     <GestureHandlerRootView style={{flex: 1}}>
 
@@ -35,7 +34,7 @@ export default function App() {
             <AuthProvider>
               <StatusBar style="auto" />
                 <Routes/>
-              <Toast/>
+              <Toast />
             </AuthProvider>
           </BottomSheetProvider>
 

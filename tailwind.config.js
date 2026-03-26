@@ -29,6 +29,7 @@ module.exports = {
           7: "#FAFAFA",
         },
         white: "#FFFFFF",
+        background: "#F7F8FC",
       },
       fontFamily: {
         nunito_regular: ["Nunito_400Regular"],

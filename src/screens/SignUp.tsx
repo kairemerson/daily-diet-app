@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "../components/Button";
@@ -47,9 +47,13 @@ export function SignUp() {
     }
   return (
     <SafeAreaView className="flex-1 px-6 bg-white">
-      <Text className="text-gray-1 text-xl text-center mb-20 mt-20 font-nunito_bold">
-        Crie sua conta
-      </Text>
+      
+      <View className="py-6 items-center gap-6">
+          <Image source={require("@/assets/adaptive-icon.png")} className="w-[200] h-[200] "/>
+          <Text className="text-gray-1 text-xl text-center font-nunito_bold">
+            Crie sua conta
+          </Text>
+        </View>
 
       <View className="mb-10"> 
         <AppInput

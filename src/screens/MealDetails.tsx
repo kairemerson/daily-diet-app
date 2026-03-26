@@ -10,6 +10,8 @@ import { ConfirmModal } from '../components/ConfirmModal';
 import Toast from 'react-native-toast-message';
 import { PatientStackParamList } from '../@types/navigation';
 import { PatientNavigationProps } from '../routes/patient.routes';
+import { colors } from '../theme/colors';
+
 
 type RouteProps = RouteProp<PatientStackParamList, "MealDetails">;
 
@@ -26,15 +28,17 @@ export default function MealDetails() {
     const {data: meal, isLoading} = useQuery({
         queryKey: ["meal", id],
         queryFn: () => getMealByIdRequest(id)
-    })
+    })    
 
+    // console.log("MealDetails => meal: ", meal);
+    
     const {mutateAsync, isPending} = useMutation({
         mutationFn: deleteMealRequest,
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ["meals"] });
-            await queryClient.invalidateQueries({ queryKey: ["metrics"] });
+            // await queryClient.invalidateQueries({ queryKey: ["metrics"] });
 
-            navigation.navigate("Home");
+            navigation.navigate("PatientTabs");
         }
     })
 
@@ -45,27 +49,35 @@ export default function MealDetails() {
     async function confirmDelete() {
         if(!meal?.id) return
 
-        setModalVisible(false);
         try {
             await mutateAsync(meal?.id)
-
+            
             Toast.show({
                 type: "success",
                 text1: "Refeição excluída com sucesso!",
             });
-
+            
         } catch (error) {
             Toast.show({
                 type: "error",
                 text1: "Erro ao excluir refeição!",
             });
+        }finally {
+            setModalVisible(false);
+
         }
-        
         
     }
     
 
-    if(isLoading) return <ActivityIndicator/>
+    if(isLoading) {
+        return(
+            <View className='mt-28'>
+                <ActivityIndicator color={colors.green.dark} size={24}/>
+            </View>
+
+        ) 
+    }
     
     
   return (
@@ -81,12 +93,33 @@ export default function MealDetails() {
             )}
 
             <Text className='font-nunito_bold text-gray-1 text-sm mb-2'>Data e hora</Text>
-            <Text className='font-nunito_regular text-base text-gray-2 mb-10'>{dayjs(meal?.date).format("DD/MM/YYYY") + " "}às{" " + dayjs(meal?.date).format("HH:mm")}</Text>
+            <Text className='font-nunito_regular text-base text-gray-2 mb-10'>{dayjs(meal?.date ?? "").format("DD/MM/YYYY")} às {meal?.time ?? ""}</Text>
 
-            <View className='flex-row bg-gray-6 items-center justify-center w-[144] gap-2 px-4 py-2 rounded-full'>
+            <View className={`flex-row ${meal?.isOnDiet ? "bg-green-light" : "bg-red-light"} items-center justify-center w-[144] gap-2 px-4 py-2 rounded-full`}>
                 <View className={`h-3 w-3 rounded-full ${meal?.isOnDiet ? "bg-green-dark" : "bg-red-dark"}`}/>
                 <Text className='text-gray-1 text-sm'>{meal?.isOnDiet ? "dentro da dieta" : "fora da dieta"}</Text>
             </View>
+
+            {meal && (
+                <View className="bg-green-light p-4 rounded-2xl mt-8 mb-4 border border-green-mid">
+                    <Text className="font-bold text-green-dark mb-2">
+                        Macros consumidos desta refeição
+                    </Text>
+
+                    <Text className="text-gray-700">
+                    🔥 {meal.consumedCalories ?? 0} kcal
+                    </Text>
+                    <Text className="text-gray-700">
+                    💪 {meal.consumedProtein ?? 0}g proteína
+                    </Text>
+                    <Text className="text-gray-700">
+                    🍞 {meal.consumedCarbs ?? 0}g carbo
+                    </Text>
+                    <Text className="text-gray-700">
+                    🥑 {meal.consumedFat ?? 0}g gordura
+                    </Text>
+                </View>
+            )}
 
         </View>
 
@@ -101,6 +134,7 @@ export default function MealDetails() {
             onCancel={() => setModalVisible(false)}
             onConfirm={confirmDelete}
             confirmText='Sim, excluir'
+            
         />
         
     </View>

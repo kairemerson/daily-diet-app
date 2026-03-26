@@ -48,14 +48,15 @@ export default function BodyMetricsForm({patientId, closeBottomSheet}: Props) {
 
     const {mutate, isPending} = useMutation({
         mutationFn: createBodyMetricsRequest,
-        onSuccess: (newMealPlan) => {
+        onSuccess: async (newMealPlan) => {
             queryClient.setQueryData<BodyMetrics[]>(
                 ["body-metrics", patientId],
                 (old) => old ? [newMealPlan, ...old] : [newMealPlan]
             )
+            await queryClient.invalidateQueries({ queryKey: ["dashboard", patientId] });
             Toast.show({
                 type: "success",
-                text1: "Métricas adicionadas criado com sucesso!",
+                text1: "Métricas adicionadas com sucesso!",
             });
             reset()
             closeBottomSheet()
@@ -197,13 +198,13 @@ export default function BodyMetricsForm({patientId, closeBottomSheet}: Props) {
             />
 
             <Text className="text-base font-nunito_bold mb-1 mt-3">
-                Data final
+                Data
             </Text>
             {watch("recordedAt") && (
                 <TouchableOpacity
                     onPress={() => setValue("recordedAt", undefined)}
                 >
-                    <Text className="text-red-500">clique aqui para remover a data</Text>
+                    <Text className="text-red-500">clique aqui se quiser remover a data</Text>
                 </TouchableOpacity>
             )}
             <TouchableOpacity onPress={()=> setShowDatePicker(true)} className="bg-white border border-gray-5 rounded-md p-4">

@@ -7,6 +7,7 @@ import { MealForm } from "../screens/MealForm";
 import Feedback from "../screens/Feedback";
 import MealDetails from "../screens/MealDetails";
 import { HomePatient } from "../screens/HomePatient";
+import { PatientTabs } from "./patient.tabs";
 
 
 const Stack = createNativeStackNavigator<PatientStackParamList>();
@@ -17,7 +18,7 @@ export function PatientRoutes() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {/* <Stack.Screen name="Home" component={Home} /> */}
-      <Stack.Screen name="Home" component={HomePatient} />
+      <Stack.Screen name="PatientTabs" component={PatientTabs} />
       <Stack.Screen name="Statistics" component={Statistics} />
       <Stack.Screen name="MealForm" component={MealForm} />
       <Stack.Screen name="Feedback" component={Feedback} />

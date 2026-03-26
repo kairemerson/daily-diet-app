@@ -51,7 +51,7 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
             // )
             Toast.show({
                 type: "success",
-                text1: "Métricas adicionadas criado com sucesso!",
+                text1: "Item adicionado com sucesso!",
             });
             reset()
             closeBottomSheet()
@@ -64,7 +64,7 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
                 
             Toast.show({
                 type: "error",
-                text1: "Erro ao salvar métricas!",
+                text1: "Erro ao salvar Item!",
                 text2: error.response.data.message
             });
         }
@@ -74,7 +74,7 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
         const parsed = {
             ...data,
             order: Number(data.order),
-            time: convertHourToDate(data.time),
+            time: data.time,
             targetCalories: data.targetCalories ? Number(data.targetCalories) : undefined,
             targetProtein: data.targetProtein ? Number(data.targetProtein) : undefined,
             targetCarbs: data.targetCarbs ? Number(data.targetCarbs) : undefined,
@@ -108,7 +108,7 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
                 placeholder="Digite uma descrição"
                 icon="edit-note"
                 multiline
-                className="h-20"
+                className="w-[95%] h-20"
             />
 
             <AppSelect 

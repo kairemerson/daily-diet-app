@@ -1,22 +1,20 @@
 
-import { View, Text, ScrollView, TouchableOpacity, FlatList } from "react-native"
+import { View, Text, ScrollView, TouchableOpacity } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import {  MaterialIcons } from "@expo/vector-icons"
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { AppCard } from "../components/AppCard"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { PatientProfile } from "../types/patients"
+import { useQuery } from "@tanstack/react-query"
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native"
 import { AdminStackParamList } from "../@types/navigation"
 import { AdminNavigationProps } from "../routes/admin.routes"
 import { Button } from "../components/Button"
-import { getMealPlanRequest } from "../services/mealPlan"
 import { useBottomSheet } from "../contexts/BottomSheetContext"
 import BodyMetricsForm from "../components/BodyMetricsForm"
-import { getBodyMetricsRequest } from "../services/bodyMetrics"
 import { colors } from "../theme/colors";
 import { getDashboard } from "../services/patients";
 import { MealPlanItemForm } from "../components/MealPlanItemForm";
+import { PatientActionsMenu } from "../components/PatientActionsMenu";
 
 type RouteProps = RouteProp<AdminStackParamList, "PatientDetails">
     
@@ -37,23 +35,6 @@ export function PatientDetails() {
     const route = useRoute<RouteProps>()
     const {patientId} = route.params
 
-    const queryClient = useQueryClient()
-
-    // const patients = queryClient.getQueryData<PatientProfile[]>(["patients"])
-    // const patient = patients?.find((p) => p.id === patientId)
-
-    // const {data: mealPlans} = useQuery({
-    //   queryKey: ["meal-plans", patientId],
-    //   queryFn: () => getMealPlanRequest(patientId),
-    //   enabled: !!patientId
-    // })
-
-    // const {data: calculatedBodyMetrics} = useQuery({
-    //   queryKey: ["body-metrics", patientId],
-    //   queryFn: () => getBodyMetricsRequest(patientId),
-    //   enabled: !!patientId
-    // })
-
     const {data: dashboard, isLoading} = useQuery({
       queryKey: ["dashboard", patientId],
       queryFn: () => getDashboard(patientId),
@@ -62,16 +43,17 @@ export function PatientDetails() {
 
     // console.log("PatientDetails => dashboard: ", dashboard);
     
-
-    
-    // console.log("PatientDetails = mealPlans", mealPlans);
     // console.log("PatientDetails = bodyMetrics", calculatedBodyMetrics);
     
-    if(isLoading){
+    if(isLoading || !dashboard){
       return <Text>carregando...</Text>
     }
+    
+    const {patient, metrics, mealPlans, adherence} = dashboard
+    const activeMealPlan = mealPlans.find((mealPlan) => mealPlan.isActive)
 
-    const {patient, metrics, activeMealPlan, adherence} = dashboard
+    const previousMealPlans = mealPlans.filter((mealPlan) => !mealPlan.isActive).sort((a, b) => new  Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    // console.log("PatientDetails = activeMealPlan", activeMealPlan, previousMealPlans);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-7">
@@ -95,7 +77,9 @@ export function PatientDetails() {
               </View>
             </View>
 
-            <TouchableOpacity className="w-12 h-12 rounded-2xl bg-white items-center justify-center shadow-sm">
+            <TouchableOpacity className="w-12 h-12 rounded-2xl bg-white items-center justify-center shadow-sm"
+              onPress={() => open(() => <PatientActionsMenu status={patient.status} patientId={patient.id} closeBottomSheet={close}/>, ["60%"])}
+            >
               <MaterialIcons
                 name="more-vert"
                 size={22}
@@ -112,7 +96,7 @@ export function PatientDetails() {
               Peso atual
             </Text>
             <Text className="text-gray-1 font-nunito_bold">
-              {metrics?.currentWeight}kg
+              {metrics?.currentWeight?.toFixed(2) ?? "- "}kg
             </Text>
           </View>
 
@@ -121,27 +105,28 @@ export function PatientDetails() {
               Meta
             </Text>
             <Text className="text-gray-1 font-nunito_bold">
-              {patient?.targetWeight}kg
+              {patient?.targetWeight?.toFixed(2)}kg
             </Text>
           </View>
 
-            { metrics?.weightDifference &&
+            {metrics.weightDifference !== null && (
               metrics.weightDifference < 0 ? (
-                <View className="gap-2 flex-row items-center">
-                  <FontAwesome5  name="arrow-down" size={14} color={colors.green.dark} />
-                  <Text className="text-green-dark font-nunito_bold">
-                    {metrics.weightDifference + " "} desde início
-                  </Text>
-                </View>
-              ) : (
-                <View className="gap-2 flex-row items-center">
-                  <FontAwesome5  name="arrow-up" size={14} color={colors.red.dark} />
-                  <Text className="text-red-dark font-nunito_bold">
-                    +{metrics?.weightDifference + " "} desde início
-                  </Text>
-                </View>
-              )
-            }
+                  <View className="gap-2 flex-row items-center">
+                    <FontAwesome5  name="arrow-down" size={14} color={colors.green.dark} />
+                    <Text className="text-green-dark font-nunito_bold">
+                      {metrics.weightDifference.toFixed(2) + " "} desde início
+                    </Text>
+                  </View>
+                ) : (
+                  <View className="gap-2 flex-row items-center">
+                    <FontAwesome5  name="arrow-up" size={14} color={colors.red.dark} />
+                    <Text className="text-red-dark font-nunito_bold">
+                      +{metrics?.weightDifference.toFixed(2) + " "} desde início
+                    </Text>
+                  </View>
+                )
+
+            )}
 
           <View className="h-32 bg-gray-6 rounded-xl mt-4 items-center justify-center">
             <Text className="text-gray-4">
@@ -173,7 +158,7 @@ export function PatientDetails() {
                 Gordura
               </Text>
               <Text className="text-xl font-nunito_bold text-gray-1 mt-1">
-                {metrics?.currentBodyFat}%
+                {metrics?.currentBodyFat?.toFixed(0) ?? "- "}%
               </Text>
             </View>
 
@@ -182,7 +167,7 @@ export function PatientDetails() {
                 Massa magra
               </Text>
               <Text className="text-xl font-nunito_bold text-gray-1 mt-1">
-                {metrics?.currentMuscleMass}kg
+                {metrics?.currentMuscleMass?.toFixed(2) ?? "- "}kg
               </Text>
             </View>
           </View>
@@ -191,38 +176,108 @@ export function PatientDetails() {
         {/* PLANO ALIMENTAR */}
         <AppCard title="Plano Alimentar Ativo" icon="restaurant-menu">
 
-          
-          <View className="flex-row justify-between items-center mb-3">
-            <View className="">
-              <Text className="text-gray-1 font-nunito_bold" numberOfLines={1}>
-                {activeMealPlan?.title}
-              </Text>
-              {
-                activeMealPlan.description && (
-                  <Text className="text-gray-3 font-nunito_regular" numberOfLines={2}>
-                    {activeMealPlan.description}
-                  </Text>
-                )
-              }
+          {activeMealPlan && (
+            <View className="flex-row justify-between items-center gap-3 mb-3">
+              <View className="max-w-[80%]">
+                <Text className="text-gray-1 font-nunito_bold" numberOfLines={1}>
+                  {activeMealPlan?.title}
+                </Text>
+                {
+                  activeMealPlan?.description && (
+                    <Text className="text-gray-3 font-nunito_regular leading-4" numberOfLines={2}>
+                      {activeMealPlan?.description}
+                    </Text>
+                  )
+                }
+
+              </View>
+              
+              <View className={`${activeMealPlan?.isActive ? "bg-green-light" : "bg-red-light"} px-3 py-1  rounded-lg`}>
+                <Text className={`${activeMealPlan?.isActive ? "text-green-dark" : "text-red-dark"} text-xs font-nunito_bold`}>
+                  {activeMealPlan?.isActive ? "Ativo" : "Inativo"}
+                </Text>
+              </View>
 
             </View>
-            <View className={`${activeMealPlan?.isActive ? "bg-green-light" : "bg-red-light"} px-3 py-1  rounded-lg`}>
-              <Text className={`${activeMealPlan?.isActive ? "text-green-dark" : "text-red-dark"} text-xs font-nunito_bold`}>
-                {activeMealPlan?.isActive ? "Ativo" : "Inativo"}
-              </Text>
-            </View>
-          </View>
+          )}
 
-          <Text className="text-gray-3 text-sm mb-4">
+          {!activeMealPlan && (
+            <Text className="font-nunito_regular text-center text-gray-4">Crie um novo plano</Text>
+          )}
+
+          {/* <Text className="text-gray-3 text-sm mb-4">
             150g proteína • 180g carbo • 60g gordura
-          </Text>
+          </Text> */}
           
           <View className="gap-3">
-            <Button title="Adicionar item" onPress={() => open(() => <MealPlanItemForm mealPlanId={activeMealPlan.id} closeBottomSheet={close} />, ["100%"])}/>
-            <Button title="Editar Plano" variant="secondary"/>
+            {activeMealPlan && (
+              <>
+                <Button title="Adicionar item" onPress={() => open(() => <MealPlanItemForm mealPlanId={activeMealPlan.id} closeBottomSheet={close} />, ["100%"])}/>
+                <Button title="Editar Plano" variant="secondary" onPress={() => navigation.navigate("CreateMealPlan", {patientId, mealPlanId: activeMealPlan.id})}/>
+              </>
+            )}
           </View>
-              
+          
+          {previousMealPlans.length > 0 && (
+            <>
+              <View className="h-[1px] bg-gray-5 mt-6 mb-3"/>
+
+              <Text className="text-gray-4 text-sm font-nunito_bold mb-2">
+                Planos anteriores
+              </Text>
+
+              <View className="gap-2">
+
+                {previousMealPlans?.slice(0,2).map(plan => (
+
+                  <TouchableOpacity
+                    key={plan.id}
+                    className="flex-row justify-between items-center bg-gray-7 p-3 rounded-lg"
+                    onPress={() =>
+                      navigation.navigate("CreateMealPlan", {
+                        patientId,
+                        mealPlanId: plan.id
+                      })
+                    }
+                  >
+
+                    <View>
+                      <Text className="text-gray-1 font-nunito_bold">
+                        {plan.title}
+                      </Text>
+
+                      <Text className="text-gray-3 text-xs">
+                        {plan.caloriesTarget} kcal
+                      </Text>
+                    </View>
+
+                    <MaterialIcons
+                      name="chevron-right"
+                      size={20}
+                      color="#9CA3AF"
+                    />
+
+                  </TouchableOpacity>
+
+                ))}
+
+              </View>
+
+              <TouchableOpacity
+                className="mt-3"
+                onPress={() =>
+                  navigation.navigate("MealPlansHistory", { patientId })
+                }
+              >
+                <Text className="text-green-dark font-nunito_bold">
+                  Ver todos os planos →
+                </Text>
+              </TouchableOpacity>
+            </>
+
+          )}
         </AppCard>
+
 
         {/* ADERÊNCIA */}
         <AppCard title="Aderência (7 dias)" icon="insights">
@@ -236,8 +291,18 @@ export function PatientDetails() {
           </View>
 
           <View className="h-3 bg-gray-6 rounded-full mt-4 overflow-hidden">
-            <View className="w-4/5 bg-green-dark h-full rounded-full" />
+            <View className={` bg-green-dark h-full rounded-full`} 
+              style={{
+                width: `${adherence?.last7Days ?? 0}%`
+              }}
+            />
           </View>
+        </AppCard>
+
+        <AppCard title="Refeições recentes">
+              <TouchableOpacity onPress={() => navigation.navigate("MealHistory", {patientId})} activeOpacity={0.7}>
+                <Text className="text-green-dark font-nunito_bold">Ver histórico →</Text>
+              </TouchableOpacity>
         </AppCard>
 
         {/* OBSERVAÇÕES */}

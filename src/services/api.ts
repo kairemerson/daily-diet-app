@@ -7,6 +7,7 @@ import { Platform } from "react-native";
 //     : "http://localhost:3333";
 
 const BASE_URL = "http://192.168.1.102:3333"
+// const BASE_URL = "https://api-dietwell.onrender.com"
 
 export const api = axios.create({
   baseURL: BASE_URL,

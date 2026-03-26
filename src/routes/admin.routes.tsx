@@ -5,6 +5,10 @@ import { PatientCreateForm } from "../components/PatientCreateForm";
 import { NutritionistProfile } from "../screens/NutritionistProfile";
 import { PatientDetails } from "../screens/PatientDetails";
 import CreateMealPlan from "../screens/CreateMealPlan";
+import { MealPlansHistory } from "../screens/MealPlansHistory";
+import { MealsHistory } from "../screens/MealsHistory";
+import { MealHistory } from "../screens/MealHistory";
+import { MealPlanDetails } from "../screens/MealPlanDetails";
 
 
 
@@ -20,6 +24,9 @@ export function AdminRoutes() {
             <Stack.Screen name="NutritionistProfile" component={NutritionistProfile}/>
             <Stack.Screen name="PatientDetails" component={PatientDetails}/>
             <Stack.Screen name="CreateMealPlan" component={CreateMealPlan}/>
+            <Stack.Screen name="MealPlansHistory" component={MealPlansHistory}/>
+            <Stack.Screen name="MealHistory" component={MealHistory}/>
+            <Stack.Screen name="MealPlanDetails" component={MealPlanDetails}/>
         </Stack.Navigator>
     )
 }
