@@ -15,6 +15,7 @@ import { colors } from "../theme/colors";
 import { getDashboard } from "../services/patients";
 import { MealPlanItemForm } from "../components/MealPlanItemForm";
 import { PatientActionsMenu } from "../components/PatientActionsMenu";
+import { Skeleton } from "../components/Skeleton";
 
 type RouteProps = RouteProp<AdminStackParamList, "PatientDetails">
     
@@ -46,7 +47,15 @@ export function PatientDetails() {
     // console.log("PatientDetails = bodyMetrics", calculatedBodyMetrics);
     
     if(isLoading || !dashboard){
-      return <Text>carregando...</Text>
+      return (
+        <View className="py-20 px-6">
+          <Skeleton height={70}/>
+          <Skeleton height={240} className="mt-4"/>
+          <Skeleton height={220} className="mt-4"/>
+          <Skeleton height={220} className="mt-4"/>
+
+        </View>
+      )
     }
     
     const {patient, metrics, mealPlans, adherence} = dashboard
