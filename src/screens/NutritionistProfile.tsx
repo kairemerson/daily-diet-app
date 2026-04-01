@@ -6,13 +6,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AppInput from "../components/AppInput";
 import { Button } from "../components/Button";
 import { useNavigation } from "@react-navigation/native";
-import { useMutation } from "@tanstack/react-query";
-import { createNutritionistProfileRequest } from "../services/nutritionist";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { createNutritionistProfileRequest, getNutritionistProfileRequest, updateNutritionistProfileRequest } from "../services/nutritionist";
 import Toast from "react-native-toast-message";
 import { useAuth } from "../contexts/AuthContext";
+import { useEffect } from "react";
+import { Skeleton } from "../components/Skeleton";
 
 const nutritionistProfileSchema = z.object({
-    crn: z.string("O CRN é obrigatorio"),
+    crn: z.string("O CRN é obrigatorio").min(2, "O CRN precisa ter mais de 2 caracteres"),
     specialty: z.string().optional(),
     clinic: z.string().optional(),
     phone: z.string().optional()
@@ -25,7 +27,9 @@ export function NutritionistProfile() {
 
     const navigation = useNavigation()
 
-  const {control, handleSubmit} = useForm<NutritionistProfileData>({
+    const queryClient = new QueryClient()
+
+  const {control, handleSubmit, reset, formState: {errors}} = useForm<NutritionistProfileData>({
     resolver: zodResolver(nutritionistProfileSchema),
     defaultValues: {
       crn: "",
@@ -35,13 +39,30 @@ export function NutritionistProfile() {
     }
   })
 
+  const {data: nutritionistProfile, isLoading} = useQuery({
+    queryKey: ["nutritionist-profile"],
+    queryFn: getNutritionistProfileRequest
+  })
+  console.log("NutritionistProfile: data => ", nutritionistProfile);
+
+  const hasNutritionistProfile = !!nutritionistProfile?.nutritionistProfile
+
+  
+
   const {mutate, isPending} = useMutation({
-    mutationFn: createNutritionistProfileRequest,
+    mutationFn: async (data: NutritionistProfileData) => {
+      if(hasNutritionistProfile) {
+        return updateNutritionistProfileRequest(data)
+      }else {
+        return createNutritionistProfileRequest(data)
+      }
+    },
     onSuccess: () => {
         Toast.show({
             type: "success",
-            text1: "Perfil atualizado com sucesso",
+            text1: hasNutritionistProfile ? "Perfil atualizado com sucesso": "Perfil criado com sucesso",
         });
+        queryClient.invalidateQueries({queryKey: ["nutritionist-profile"]})
         navigation.goBack()
     },
     onError: (error: any) => {
@@ -57,6 +78,22 @@ export function NutritionistProfile() {
     mutate(data)
   }
 
+  useEffect(() => {
+    if(nutritionistProfile?.nutritionistProfile) {
+      reset({
+        crn: nutritionistProfile.nutritionistProfile.crn || "",
+        specialty: nutritionistProfile.nutritionistProfile.specialty || "",
+        clinic: nutritionistProfile.nutritionistProfile.clinic || "",
+        phone: nutritionistProfile.nutritionistProfile.phone || ""
+      })
+    }
+  }, [nutritionistProfile, reset])
+
+  if(isLoading) {
+    return (
+      <Skeleton width={100} height={40}/>
+    )
+  }
   return (
     <SafeAreaView className="bg-white flex-1 px-6 pt-4 pb-10">
       <ScrollView className="" showsVerticalScrollIndicator={false}>
@@ -131,13 +168,13 @@ export function NutritionistProfile() {
 
           </View>
 
-          <View className="gap-3 mt-6">
+          <View className="gap-4 mt-6">
             <Button title="Salvar" onPress={handleSubmit(onSubmit)} disabled={isPending}/>
             <Button title="Voltar" variant="secondary" onPress={() => navigation.goBack()}/>
             
           </View>
-          <Button title="Sair" onPress={signOut}/>
       </ScrollView>
+          <Button title="Sair" onPress={signOut} variant="secondary"/>
     </SafeAreaView>
   );
 }
