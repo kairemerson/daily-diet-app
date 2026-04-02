@@ -43,7 +43,7 @@ export function NutritionistProfile() {
     queryKey: ["nutritionist-profile"],
     queryFn: getNutritionistProfileRequest
   })
-  console.log("NutritionistProfile: data => ", nutritionistProfile);
+  // console.log("NutritionistProfile: data => ", nutritionistProfile);
 
   const hasNutritionistProfile = !!nutritionistProfile?.nutritionistProfile
 

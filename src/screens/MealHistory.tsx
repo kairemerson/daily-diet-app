@@ -27,23 +27,27 @@ export function MealHistory() {
     return (
         <View className="flex-1 bg-gray-7">
             <HeaderPage title="Histórico de refeições"/>
+        
+            <View className="flex-1 bg-gray-7 rounded-t-3xl pt-3 -mt-5">
 
-            <SectionList
-                sections={meals}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <MealHistoryCard meal={item} />
-                )}
-                renderSectionHeader={({section: {title}}) => (
-                    <Header title={dayjs(title).format("DD/MM/YYYY")}/>
-                )}
-                ListEmptyComponent={() => (
-                    <View className="mt-20">
-                    <Text className="text-center text-gray-3 font-nunito_regular">Nenhum item na lista, paciente ainda não adicionou refeição!</Text>
-                    </View>
-                )}
-                contentContainerStyle={{paddingHorizontal: 18}}
-            />
+                <SectionList
+                    sections={meals}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                        <MealHistoryCard meal={item} />
+                    )}
+                    renderSectionHeader={({section: {title}}) => (
+                        <Header title={dayjs(title).format("DD/MM/YYYY")}/>
+                    )}
+                    ListEmptyComponent={() => (
+                        <View className="mt-20">
+                        <Text className="text-center text-gray-3 font-nunito_regular">Nenhum item na lista, paciente ainda não adicionou refeição!</Text>
+                        </View>
+                    )}
+                    contentContainerStyle={{paddingHorizontal: 18}}
+                />
+
+            </View>
 
         </View>
     )
