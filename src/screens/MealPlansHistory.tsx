@@ -30,15 +30,19 @@ export function MealPlansHistory() {
     <View className="flex-1 bg-gray-7">
 
       <HeaderPage title="Planos alimentares"/>
+      <View className="flex-1 bg-gray-7 rounded-t-3xl pt-3 -mt-5">
 
-      <FlatList
-        data={mealPlans}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <MealPlanCard mealPlan={item} />
-        )}
-        contentContainerStyle={{paddingHorizontal: 16, marginTop: 16}}
-      />
+
+        <FlatList
+          data={mealPlans}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <MealPlanCard mealPlan={item} />
+          )}
+          contentContainerStyle={{paddingHorizontal: 16, marginTop: 16}}
+        />
+
+      </View>
 
     </View>
   )

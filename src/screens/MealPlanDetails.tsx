@@ -36,20 +36,12 @@ export function MealPlanDetails() {
   return (
     <View className="flex-1 bg-gray-7">
       <HeaderPage title="Plano alimentar"/>
-      <ScrollView className="px-6 pt-6">
+      <ScrollView className="px-6 pt-6 rounded-t-3xl bg-gray-7 -mt-5">
 
         {/* HEADER */}
         <View className="mb-6">
 
-          <Text className="text-2xl font-nunito_bold text-gray-1">
-            {mealPlan.title}
-          </Text>
-
-          <Text className="text-gray-3 mt-1">
-            {mealPlan.description}
-          </Text>
-
-          <View className={`mt-3 self-start px-3 py-1 rounded-lg
+          <View className={`self-start px-3 py-1 mt-2 rounded-lg
             ${mealPlan.isActive ? "bg-green-light" : "bg-gray-6"}`}>
             
             <Text className={`text-xs font-nunito_bold
@@ -58,6 +50,15 @@ export function MealPlanDetails() {
             </Text>
 
           </View>
+
+          <Text className="text-lg font-nunito_bold text-gray-1 mt-6">
+            {mealPlan.title}
+          </Text>
+
+          <Text className="text-gray-3 text-sm mt-2">
+            {mealPlan.description}
+          </Text>
+
 
         </View>
 
