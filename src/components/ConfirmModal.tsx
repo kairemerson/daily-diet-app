@@ -18,6 +18,7 @@ export function ConfirmModal({
   onConfirm,
   confirmText = "Confirmar",
 }: ConfirmModalProps) {
+  
   return (
     <Modal
       transparent
