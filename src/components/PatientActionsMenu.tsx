@@ -4,6 +4,8 @@ import { colors } from "../theme/colors"
 import { PatientStatus } from "../types/patients"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { updatePatientStatus } from "../services/patients"
+import Toast from "react-native-toast-message"
+import { useModal } from "../contexts/ModalContext"
 
 type Props = {
     patientId: string
@@ -13,11 +15,12 @@ type Props = {
 }
 
 export function PatientActionsMenu({ status, patientId, closeBottomSheet }: Props) {
+    const {openConfirm, close} = useModal()
 
     const isActive = status === "ACTIVE"
 
     function getNextStatus(status: PatientStatus): PatientStatus {
-        console.log("getnextStatus: ", status);
+        // console.log("getnextStatus: ", status);
         
         if (status === "ACTIVE") return "INACTIVE"
         return "ACTIVE"
@@ -34,16 +37,46 @@ export function PatientActionsMenu({ status, patientId, closeBottomSheet }: Prop
         }
     })
 
-    async function handleChangeStatus() {
-        const newStatus = getNextStatus(status)
+    function handleOpenModal() {
+        closeBottomSheet()
         
-        await mutateAsync(newStatus)
+        openConfirm({
+          title: "Deseja mesmo alterar o status do paciente?",
+          confirmText: "Sim, alterar",
+          onConfirm: handleChangeStatus,
+        })
+    }
+    
+
+    async function handleChangeStatus() {
+        if(!status) return
+
+        try {
+          const newStatus = getNextStatus(status)
+          
+          await mutateAsync(newStatus)
+
+          Toast.show({
+              type: "success",
+              text1: `Paciente alterado com sucesso!`,
+          });
+          close()
+          
+        } catch (error) {
+          Toast.show({
+              type: "error",
+              text1: "Erro ao alterar status do paciente!",
+          });
+        }
     }
 
   return (
-    <View className="px-6 pt-5 pb-20">
+    <View className="px-6 pb-20">
 
-      <Text className="text-center text-gray-1 font-nunito_bold text-base mb-6">
+      <TouchableOpacity activeOpacity={0.7} onPress={closeBottomSheet} className="ml-auto mb-6">
+        <MaterialIcons name="close" size={24} color={colors.gray[1]} />
+      </TouchableOpacity>
+      <Text className="text-center text-gray-1 font-nunito_bold text-base mb-5">
         Ações do paciente
       </Text>
 
@@ -70,7 +103,7 @@ export function PatientActionsMenu({ status, patientId, closeBottomSheet }: Prop
       {/* ATIVAR / INATIVAR */}
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={handleChangeStatus}
+        onPress={() => handleOpenModal()}
         className="flex-row items-center justify-between py-4"
       >
         <View className="flex-row items-center gap-3">
@@ -124,7 +157,7 @@ export function PatientActionsMenu({ status, patientId, closeBottomSheet }: Prop
       <View className="h-[1px] bg-gray-5" />
 
       {/* EXCLUIR */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
         activeOpacity={0.7}
         className="flex-row items-center justify-between py-4"
       >
@@ -141,7 +174,7 @@ export function PatientActionsMenu({ status, patientId, closeBottomSheet }: Prop
         </View>
 
         <MaterialIcons name="chevron-right" size={20} color={colors.gray[4]} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
     </View>
   )

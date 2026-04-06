@@ -83,15 +83,26 @@ export function PatientDetails() {
                 </Text>
 
                 <View className="flex-row items-center mt-1">
-                  <View className="w-3 h-3 rounded-full bg-green-dark mr-2" />
+                  <View className={`w-3 h-3 rounded-full mr-2 ${
+                      patient.status === "ACTIVE" 
+                        ? "bg-green-dark" 
+                        : patient.status === "INACTIVE" 
+                        ? "bg-red-dark" 
+                        : "bg-gray-3"
+                    }`} />
                   <Text className="text-sm text-gray-3">
-                    Paciente ativo
+                    {patient.status === "ACTIVE" ? "Paciente ativo" : patient.status === "INACTIVE" ? "Paciente inativo" : "Paciente pausado"}
                   </Text>
                 </View>
               </View>
 
               <TouchableOpacity className="w-12 h-12 rounded-2xl bg-white items-center justify-center shadow-sm"
-                onPress={() => open(() => <PatientActionsMenu status={patient.status} patientId={patient.id} closeBottomSheet={close}/>, ["60%"])}
+                onPress={() => open(() => 
+                  <PatientActionsMenu 
+                    status={patient.status} 
+                    patientId={patient.id} 
+                    closeBottomSheet={close}
+                  />, ["60%"])}
               >
                 <MaterialIcons
                   name="more-vert"

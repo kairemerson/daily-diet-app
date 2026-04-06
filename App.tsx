@@ -1,5 +1,4 @@
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, Text, View } from 'react-native';
 import "./global.css";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -14,6 +13,7 @@ import { BottomSheetProvider } from './src/contexts/BottomSheetContext';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { AnimatedSplash } from './src/components/AnimatedSplash';
 import { useState } from 'react';
+import { ModalProvider } from './src/contexts/ModalContext';
 
 
 export default function App() {
@@ -29,16 +29,17 @@ export default function App() {
     <GestureHandlerRootView style={{flex: 1}}>
 
       <QueryClientProvider client={queryClient}>
-        <BottomSheetModalProvider>
-          <BottomSheetProvider>
-            <AuthProvider>
-              <StatusBar style="auto" />
-                <Routes/>
-              <Toast />
-            </AuthProvider>
-          </BottomSheetProvider>
-
-        </BottomSheetModalProvider>
+        <ModalProvider>
+          <BottomSheetModalProvider>
+            <BottomSheetProvider>
+                <AuthProvider>
+                  <StatusBar style="auto" />
+                    <Routes/>
+                  <Toast />
+                </AuthProvider>
+            </BottomSheetProvider>
+          </BottomSheetModalProvider>
+        </ModalProvider>
         </QueryClientProvider>
     </GestureHandlerRootView>
   );
