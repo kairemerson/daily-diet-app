@@ -26,6 +26,7 @@ export type PatientStackParamList = {
 };
 
 export type AdminStackParamList = {
+  AdminTabs: undefined
     HomeAdmin: undefined
     Dashboard: undefined;
     PatientDetails: { patientId: string };

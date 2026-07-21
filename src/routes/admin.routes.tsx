@@ -9,6 +9,7 @@ import { MealPlansHistory } from "../screens/MealPlansHistory";
 import { MealsHistory } from "../screens/MealsHistory";
 import { MealHistory } from "../screens/MealHistory";
 import { MealPlanDetails } from "../screens/MealPlanDetails";
+import { AdminTabs } from "./admin.tabs";
 
 
 
@@ -19,7 +20,8 @@ export type AdminNavigationProps = NativeStackNavigationProp<AdminStackParamList
 export function AdminRoutes() {
     return(
         <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name="HomeAdmin" component={HomeAdmin}/>
+            {/* <Stack.Screen name="HomeAdmin" component={HomeAdmin}/> */}
+            <Stack.Screen name="AdminTabs" component={AdminTabs}/>
             <Stack.Screen name="PatientCreateForm" component={PatientCreateForm}/>
             <Stack.Screen name="NutritionistProfile" component={NutritionistProfile}/>
             <Stack.Screen name="PatientDetails" component={PatientDetails}/>
