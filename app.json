@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -14,14 +14,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.exponentativewindstarter"
+      "bundleIdentifier": "com.dailydietapp.diet"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.exponentativewindstarter"
+      "package": "com.dailydietapp.diet"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,7 +29,14 @@
     "plugins": [
       "expo-font",
       "expo-asset",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.dailydietapp.diet",
+          "enableGooglePay": false
+        }
+      ]
     ],
     "extra": {
       "eas": {
