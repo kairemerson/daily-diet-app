@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from "react";
 import { getUser, removeUser, saveUser, StoredUser } from "../storage/userStorage";
 import { api, registerSignOut } from "../services/api";
 
@@ -18,26 +18,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [token, setToken] = useState<string | null>(null);
 
-  async function signIn(userData: StoredUser, userToken: string) {
+  const signIn = useCallback(async (userData: StoredUser, userToken: string) => {
+    api.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
+    await saveUser(userData, userToken);
     setUser(userData);
-    setToken(userToken)
+    setToken(userToken);
+  }, []);
 
-    api.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${userToken}`;
-
-    await saveUser(userData, userToken)
-  }  
-
-  async function signOut() {
-    setUser(null);
-    setToken(null)
-
+  const signOut = useCallback(async () => {
     delete api.defaults.headers.common["Authorization"];
-
-
-    await removeUser()
-  }
+    await removeUser();
+    setUser(null);
+    setToken(null);
+  }, []);
 
   async function loadUser() {
       try {

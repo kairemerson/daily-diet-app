@@ -9,15 +9,18 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { colors } from "../theme/colors";
 import { Skeleton } from "../components/Skeleton";
 import { AnimatedPatientCard } from "../components/AnimatedPatientCard";
+import { useAuth } from "../contexts/AuthContext";
 
 
 export function HomeAdmin() {
 
   const navigation = useNavigation<AdminNavigationProps>()
+  const {user} = useAuth()
 
   const {data: patients=[], isLoading} = useQuery({
     queryKey: ["patients"],
     queryFn: getPatientsRequest,
+    enabled: !!user
   })
 
   // console.log("HomeAdmin = patients: ", patients);
