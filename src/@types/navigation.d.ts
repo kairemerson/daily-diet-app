@@ -36,5 +36,5 @@ export type AdminStackParamList = {
     MealPlansHistory: {patientId: string}
     MealHistory: {patientId: string}
     MealPlanDetails: {mealPlanId: string}
-
+    Success: undefined
 }

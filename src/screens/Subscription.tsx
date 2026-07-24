@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigation } from '@react-navigation/native'
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useStripe } from "@stripe/stripe-react-native";
@@ -6,8 +7,11 @@ import { createSubscription, confirmSubscription } from "../services/subscribe";
 import { getPlans, Plan } from "../services/plans";
 import { useAuth } from "../contexts/AuthContext";
 import Toast from "react-native-toast-message";
+import { colors } from "../theme/colors";
+import { AdminNavigationProps } from "../routes/admin.routes";
 
 export function SubscriptionScreen() {
+  const navigation = useNavigation<AdminNavigationProps>()
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [loadingPlans, setLoadingPlans] = useState(true);
@@ -21,11 +25,13 @@ export function SubscriptionScreen() {
 
     async function loadPlans() {
       try {
-        const data = await getPlans();
+        const response = await getPlans();
         if (!isMounted) return;
 
-        setPlans(data);
-        setSelectedPlan(data.find((p) => p.highlight)?.id ?? data[0]?.id ?? null);
+        const plansArray = response.plans || []
+
+        setPlans(plansArray);
+        setSelectedPlan(plansArray.find((p) => p.highlight)?.id ?? plansArray[0]?.id ?? null);
       } catch (err) {
         if (!isMounted) return;
         Toast.show({
@@ -66,32 +72,36 @@ export function SubscriptionScreen() {
 
       if (initError) {
         Toast.show({ type: "error", text1: "Erro Stripe", text2: initError.message });
+        setSubmitting(false);
         return;
       }
 
-      // 3. Apresentar a folha de pagamento nativa na tela do Xiaomi
+      // 3. Apresentar a folha de pagamento nativa na tela
       const { error: presentError } = await presentPaymentSheet();
 
       if (presentError) {
         if (presentError.code !== "Canceled") {
           Toast.show({ type: "error", text1: "Falha", text2: presentError.message });
         }
+        setSubmitting(false);
         return;
       }
 
-      // 4. Confirmar a assinatura no seu Backend após sucesso no gateway
-      await confirmSubscription(subscriptionId);
-      
+      // FLUXO DIRETO E SEGURO:
+      // O modal fechou com sucesso e o cartão foi aceito (Stripe CLI deu 200 no seu terminal).
+      // O Webhook já está encarregado de mudar o status do usuário no banco.
+      // Redirecionamos o usuário imediatamente para evitar erros de latência de rede.
+    
       Toast.show({
         type: "success",
         text1: "Sucesso!",
         text2: "Sua assinatura foi ativada com sucesso."
       });
       
-      // Cole aqui o redirecionamento de tela usando seu Navigation, ex:
-      // navigation.navigate("Home");
+      navigation.navigate("Success");
 
     } catch (err) {
+      console.log("Erro capturado no fluxo geral:", err);
       Toast.show({
         type: "error",
         text1: "Erro",
@@ -104,12 +114,14 @@ export function SubscriptionScreen() {
 
   if (loadingPlans) {
     return (
-      <View className="flex-1 bg-zinc-950 items-center justify-center">
-        <ActivityIndicator size="large" color="#16a34a" />
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color={colors.green.dark} />
       </View>
     );
   }
 
+  
+  
   return (
     <ScrollView className="flex-1 bg-zinc-950">
       <View className="px-6 pt-10 pb-10">
@@ -124,7 +136,7 @@ export function SubscriptionScreen() {
 
         {/* LISTAGEM DE PLANOS */}
         <View className="gap-4">
-          {plans.map((plan) => {
+          {plans?.map((plan) => {
             const isSelected = selectedPlan === plan.id;
 
             return (
@@ -213,8 +225,8 @@ export function SubscriptionScreen() {
 // export function SubscriptionScreen() {
 
 //     return (
-//         <View>
-//             <Text>Subscription Screen</Text>
+//         <View className="flex-1">
+//             <Text className="text-black">Subscription Screen</Text>
 //         </View>
 //     )
 // }

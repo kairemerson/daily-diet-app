@@ -17,7 +17,7 @@ export function MealsHistory() {
         queryKey: ["meals"],
         queryFn: getMealsRequest,
     })
-
+    
   return (
      <SafeAreaView className="flex-1 bg-background px-6">  
     
