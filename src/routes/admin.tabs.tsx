@@ -4,6 +4,7 @@ import { MealsHistory } from "../screens/MealsHistory";
 import { HomeAdmin } from "../screens/HomeAdmin";
 import { NutritionistProfile } from "../screens/NutritionistProfile";
 import { SubscriptionScreen } from "../screens/Subscription";
+import { colors } from "../theme/colors";
 
 const Tab = createBottomTabNavigator();
 
@@ -13,7 +14,7 @@ export function AdminTabs() {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false, //remove texto
-        tabBarActiveTintColor: "#16a34a",
+        tabBarActiveTintColor: colors.green.dark,
         tabBarInactiveTintColor: "#9ca3af",
         tabBarStyle: {
             height: 70,

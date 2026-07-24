@@ -24,8 +24,17 @@ export function registerSignOut(signOut: SignOutFunction) {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401 && error.config.url !== "/sessions") {
+    // 🔥 Proteção 1: Se for erro de rede puro (ex: timeout do servidor local), não deslogue
+    if (!error.response) {
+      return Promise.reject(error);
+    }
+
+    // 🔥 Proteção 2: Evita deslogar em requisições de autenticação e rotas públicas
+    const isAuthRoute = error.config.url?.includes("/sessions") || error.config.url?.includes("/login");
+
+    if (error.response?.status === 401 && !isAuthRoute) {
       if (signOutCallback) {
+        console.log("⚠️ Interceptor disparou 401 para a rota:", error.config.url);
         signOutCallback();
       }
     }

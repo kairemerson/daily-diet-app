@@ -13,13 +13,13 @@ type Props = {
 export function MealItem({id, time, title, isOnDiet }: Props) {
 
   const navigation = useNavigation<PatientNavigationProps>()
-
+  
   return (
     <TouchableOpacity className="bg-white rounded-lg p-4 mb-3 border border-gray-200 flex-row items-center justify-between"
       onPress={() => navigation.navigate("MealDetails", {id})}
     >
       <View className="flex-row items-center gap-3">
-        <Text className="font-bold">{time}</Text>
+        <Text className="font-bold text-gray-3">{time}</Text>
 
         <View className="h-4 w-px bg-gray-300" />
 
