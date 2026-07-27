@@ -91,14 +91,20 @@ export function NutritionistProfile() {
 
   if(isLoading) {
     return (
-      <Skeleton width={100} height={40}/>
+      <View className="flex-1 bg-white px-6 pt-48 gap-6">
+        <Skeleton width={"100%"} height={50}/>
+        <Skeleton width={"100%"} height={50}/>
+        <Skeleton width={"100%"} height={50}/>
+        <Skeleton width={"100%"} height={50}/>
+
+      </View>
     )
   }
   return (
     <SafeAreaView className="bg-white flex-1 px-6 pt-4 pb-10">
       <ScrollView className="" showsVerticalScrollIndicator={false}>
     
-          <Text className="text-lg text-center font-nunito_bold mb-6">
+          <Text className="text-black text-lg text-center font-nunito_bold mb-6">
             Perfil
           </Text>
 

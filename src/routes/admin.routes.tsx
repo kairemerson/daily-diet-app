@@ -10,7 +10,7 @@ import { MealsHistory } from "../screens/MealsHistory";
 import { MealHistory } from "../screens/MealHistory";
 import { MealPlanDetails } from "../screens/MealPlanDetails";
 import { AdminTabs } from "./admin.tabs";
-import { Success } from "../screens/Success";
+import { SuccessScreen } from "../screens/SuccessScreen";
 
 
 
@@ -30,7 +30,7 @@ export function AdminRoutes() {
             <Stack.Screen name="MealPlansHistory" component={MealPlansHistory}/>
             <Stack.Screen name="MealHistory" component={MealHistory}/>
             <Stack.Screen name="MealPlanDetails" component={MealPlanDetails}/>
-            <Stack.Screen name="Success" component={Success}/>
+            <Stack.Screen name="Success" component={SuccessScreen}/>
         </Stack.Navigator>
     )
 }
