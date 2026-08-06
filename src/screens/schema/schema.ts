@@ -7,10 +7,33 @@ export const mealSchema = z.object({
     time: z.string()
         .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Hora inválida"),
     isOnDiet: z.boolean(),
-    consumedCalories: z.number().optional(),
-    consumedProtein: z.number().optional(),
-    consumedCarbs: z.number().optional(),
-    consumedFat: z.number().optional(),
+    consumedFat: z
+        .preprocess((value) => {
+        if (value === "" || value === null || value === undefined) return 0;
+        return Number(value);
+        }, z.number().min(0, "O valor não pode ser negativo"))
+        .default(0),
+
+    consumedProtein: z
+        .preprocess((value) => {
+        if (value === "" || value === null || value === undefined) return 0;
+        return Number(value);
+        }, z.number().min(0, "O valor não pode ser negativo"))
+        .default(0),
+
+    consumedCarbs: z
+        .preprocess((value) => {
+        if (value === "" || value === null || value === undefined) return 0;
+        return Number(value);
+        }, z.number().min(0, "O valor não pode ser negativo"))
+        .default(0),
+
+    consumedCalories: z
+        .preprocess((value) => {
+        if (value === "" || value === null || value === undefined) return 0;
+        return Number(value);
+        }, z.number().min(0, "O valor não pode ser negativo"))
+        .default(0),
 })
 
 export type MealFormData = z.infer<typeof mealSchema>

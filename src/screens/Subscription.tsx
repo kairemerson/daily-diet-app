@@ -9,6 +9,8 @@ import { useAuth } from "../contexts/AuthContext";
 import Toast from "react-native-toast-message";
 import { colors } from "../theme/colors";
 import { AdminNavigationProps } from "../routes/admin.routes";
+import { api } from "../services/api";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function SubscriptionScreen() {
   const navigation = useNavigation<AdminNavigationProps>()
@@ -17,8 +19,10 @@ export function SubscriptionScreen() {
   const [loadingPlans, setLoadingPlans] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
+
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     let isMounted = true;
@@ -92,6 +96,12 @@ export function SubscriptionScreen() {
       // O Webhook já está encarregado de mudar o status do usuário no banco.
       // Redirecionamos o usuário imediatamente para evitar erros de latência de rede.
     
+      const response = await api.get("/users/me")
+      const userUpdated = response.data
+
+      await queryClient.invalidateQueries({  queryKey: ["userProfile"], refetchType: "all" })
+      await updateUser(userUpdated)
+
       Toast.show({
         type: "success",
         text1: "Sucesso!",
@@ -217,16 +227,3 @@ export function SubscriptionScreen() {
     </ScrollView>
   );
 }
-
-
-// import { Text, View } from "react-native";
-
-
-// export function SubscriptionScreen() {
-
-//     return (
-//         <View className="flex-1">
-//             <Text className="text-black">Subscription Screen</Text>
-//         </View>
-//     )
-// }

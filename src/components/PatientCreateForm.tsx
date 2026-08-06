@@ -132,7 +132,7 @@ export function PatientCreateForm() {
           <Text className="text-lg text-gray-3 font-nunito_regular mt-6 mb-4">Informações do paciente</Text>
 
           <View className="mb-5">
-            <Text className="text-base font-nunito_bold mt-6 mb-2">
+            <Text className="text-gray-1 text-base font-nunito_bold mt-6 mb-2">
               Objetivo
             </Text>
 
@@ -193,7 +193,7 @@ export function PatientCreateForm() {
                       keyboardType="numeric"
                       placeholder="Ex: 99/99/9999"
                       placeholderTextColor={colors.gray[4]}
-                      className="w-full"
+                      className="w-full text-gray-3"
                     />
                   </View>
                 
@@ -228,7 +228,7 @@ export function PatientCreateForm() {
                           keyboardType="numeric"
                           placeholder="Ex: 1,75"
                           placeholderTextColor={colors.gray[4]}
-                          className="w-full"
+                          className="w-full text-gray-3"
                         />
                     </View>
                 </>
@@ -261,7 +261,7 @@ export function PatientCreateForm() {
                       keyboardType="numeric"
                       placeholder="Ex: 70,50"
                       placeholderTextColor={colors.gray[4]}
-                      className="w-full"
+                      className="w-full text-gray-3"
                     />
                   </View>
                 </>
@@ -276,12 +276,12 @@ export function PatientCreateForm() {
             placeholder="Digite uma observação"
             icon="edit-note"
             multiline
-            className="w-full h-28"
+            className="w-full h-28 text-gray-3"
           />
 
         </View>
 
-        <View className="gap-3 mb-64">
+        <View className="gap-3 mb-10 mt-6">
           <Button title="Salvar" onPress={handleSubmit(onSubmit)} disabled={isPending}/>
           <Button title="Cancelar" variant="secondary"/>
         </View>

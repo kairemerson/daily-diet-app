@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,7 +14,6 @@ import { formatDecimal } from '../utils/formatDecimal'
 import { Button } from './Button'
 import { formatHourInput } from '../utils/formatHour'
 import { AppSelect } from './AppSelect'
-import { convertHourToDate } from '../utils/convertHourToDate'
 
 
 const mealPlanItemFormSchema = z.object({
@@ -87,18 +86,24 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
     }
 
   return (
-    <View className='px-6 py-4'>
-        <Text className='text-base text-center font-nunito_bold text-gray-1 mb-2'>
+    <View className='px-6 pb-10 relative'>
+        <TouchableOpacity activeOpacity={0.7} onPress={closeBottomSheet} className="ml-auto mb-2">
+            <MaterialIcons name="close" size={24} color={colors.gray[1]} />
+        </TouchableOpacity>
+
+        <Text className='text-base text-center font-nunito_bold text-gray-1 mb-3'>
             Adicionar Itens do plano alimentar
         </Text>
 
-        <View className='mb-10 mt-2'>
+
+        <View className='mb-20 mt-2'>
              <AppInput 
                 control={control}
                 name="name"
                 label="Nome"
                 placeholder="Digite o nome"
                 icon="person-outline"
+                className="text-gray-3"
             />
 
             <AppInput
@@ -108,7 +113,7 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
                 placeholder="Digite uma descrição"
                 icon="edit-note"
                 multiline
-                className="w-[95%] h-20"
+                className="w-[95%] h-20 text-gray-3"
             />
 
             <AppSelect 
@@ -126,7 +131,7 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
                 error={errors.order?.message}
             />
 
-            <Text className="font-nunito_bold text-sm mb-1">Hora</Text>
+            <Text className="font-nunito_bold text-sm text-gray-1 mb-1">Hora</Text>
             <Controller
                 control={control}
                 name="time"
@@ -138,7 +143,7 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
                     maxLength={5}
                     placeholder="Ex: 12:00"
                     placeholderTextColor={colors.gray[4]}
-                    className="bg-white border border-gray-5 rounded-md p-4 z-10"
+                    className="bg-white text-gray-3 border border-gray-5 rounded-md p-4 z-10"
                 />
                 )}
             />
@@ -146,7 +151,7 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
                 <Text className="text-red-dark text-xs mt-1">{errors.time.message}</Text>
             )}
 
-            <Text className="text-base font-nunito_bold mb-1 mt-2">
+            <Text className="text-base text-gray-1 font-nunito_bold mb-1 mt-2">
                 Calorias
             </Text>
             <Controller
@@ -174,14 +179,14 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
                             keyboardType="numeric"
                             placeholder="Ex: 2200"
                             placeholderTextColor={colors.gray[4]}
-                            className="w-full"
+                            className="w-full text-gray-3"
                         />
                         
                     </View>
                 )}
             />
 
-            <Text className="text-base font-nunito_bold mb-1 mt-2">
+            <Text className="text-base text-gray-1 font-nunito_bold mb-1 mt-2">
                 Proteinas
             </Text>
             <Controller
@@ -209,13 +214,13 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
                         keyboardType="numeric"
                         placeholder="Ex: 150.5"
                         placeholderTextColor={colors.gray[4]}
-                        className="w-full"
+                        className="w-full text-gray-3"
                     />
                     </View>
                 )}
             />
 
-            <Text className="text-base font-nunito_bold mb-1 mt-2">
+            <Text className="text-base text-gray-1 font-nunito_bold mb-1 mt-2">
                 Carboidratos
             </Text>
             <Controller
@@ -243,13 +248,13 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
                         keyboardType="numeric"
                         placeholder="Ex: 150.5"
                         placeholderTextColor={colors.gray[4]}
-                        className="w-full"
+                        className="w-full text-gray-3"
                     />
                     </View>
                 )}
             />
 
-            <Text className="text-base font-nunito_bold mb-1 mt-2">
+            <Text className="text-base text-gray-1 font-nunito_bold mb-1 mt-2">
                 Gordura
             </Text>
             <Controller
@@ -277,7 +282,7 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
                         keyboardType="numeric"
                         placeholder="Ex: 150.5"
                         placeholderTextColor={colors.gray[4]}
-                        className="w-full"
+                        className="w-full text-gray-3"
                     />
                     </View>
                 )}

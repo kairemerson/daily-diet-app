@@ -68,7 +68,7 @@ export function PatientDetails() {
   return (
     <View className="flex-1 bg-gray-7">
       <HeaderPage title="Detalhes do paciente"/>
-      <View className="flex-1 bg-gray-7 rounded-t-3xl -mt-5">
+      <View className="flex-1 bg-gray-7 rounded-t-3xl -mt-3">
       
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -226,7 +226,7 @@ export function PatientDetails() {
             )}
 
             {!activeMealPlan && (
-              <Text className="font-nunito_regular text-center text-gray-4">Crie um novo plano</Text>
+              <Text className="font-nunito_regular text-center text-gray-4">Sem plano, crie um plano</Text>
             )}
 
             {/* <Text className="text-gray-3 text-sm mb-4">
@@ -236,7 +236,7 @@ export function PatientDetails() {
             <View className="gap-3">
               {activeMealPlan && (
                 <>
-                  <Button title="Adicionar item" onPress={() => open(() => <MealPlanItemForm mealPlanId={activeMealPlan.id} closeBottomSheet={close} />, ["100%"])}/>
+                  <Button title="Adicionar item" onPress={() => open(() => <MealPlanItemForm mealPlanId={activeMealPlan.id} closeBottomSheet={close} />, ["90%"])}/>
                   <Button title="Editar Plano" variant="secondary" onPress={() => navigation.navigate("CreateMealPlan", {patientId, mealPlanId: activeMealPlan.id})}/>
                 </>
               )}
@@ -340,7 +340,7 @@ export function PatientDetails() {
           <View className="mt-4 mb-12 gap-3">
             
             <Button title="Adicionar Métricas" onPress={() => open(() => <BodyMetricsForm patientId={patientId} closeBottomSheet={close} />, ["65%"])}/>
-            <Button title="Criar Novo Plano" variant="secondary" onPress={() => navigation.navigate("CreateMealPlan", {patientId})}/>
+            <Button title="Criar Novo Plano" variant="primary" onPress={() => navigation.navigate("CreateMealPlan", {patientId})}/>
           </View>
         </ScrollView>
       </View>

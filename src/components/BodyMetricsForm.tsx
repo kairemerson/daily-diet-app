@@ -87,7 +87,10 @@ export default function BodyMetricsForm({patientId, closeBottomSheet}: Props) {
     }
 
   return (
-    <View className='px-6 py-4'>
+    <View className='px-6 '>
+      <TouchableOpacity activeOpacity={0.7} onPress={closeBottomSheet} className="ml-auto mb-2">
+        <MaterialIcons name="close" size={24} color={colors.gray[1]} />
+      </TouchableOpacity>
       <Text className='text-base text-center font-nunito_bold text-gray-1 mb-6'>Métricas corporais</Text>
 
         <View className="mb-20">
@@ -120,14 +123,14 @@ export default function BodyMetricsForm({patientId, closeBottomSheet}: Props) {
                         keyboardType="numeric"
                         placeholder="Ex: 70,50"
                         placeholderTextColor={colors.gray[4]}
-                        className="w-full"
+                        className="w-full text-gray-3"
                         />
                     </View>
                     </>
                 )}
             />
 
-            <Text className="text-base font-nunito_bold mb-1 mt-3">
+            <Text className="text-base text-gray-1 font-nunito_bold  mb-1 mt-3">
                 Gordura
             </Text>
             <Controller
@@ -155,14 +158,14 @@ export default function BodyMetricsForm({patientId, closeBottomSheet}: Props) {
                             keyboardType="numeric"
                             placeholder="Ex: 20"
                             placeholderTextColor={colors.gray[4]}
-                            className="w-full"
+                            className="w-full text-gray-3"
                         />
                         
                     </View>
                 )}
             />
 
-            <Text className="text-base font-nunito_bold mb-1 mt-3">
+            <Text className="text-base text-gray-1 font-nunito_bold mb-1 mt-3">
                 Massa muscular
             </Text>
             <Controller
@@ -190,14 +193,14 @@ export default function BodyMetricsForm({patientId, closeBottomSheet}: Props) {
                             keyboardType="numeric"
                             placeholder="Ex: 20"
                             placeholderTextColor={colors.gray[4]}
-                            className="w-full"
+                            className="w-full text-gray-3"
                         />
                         
                     </View>
                 )}
             />
 
-            <Text className="text-base font-nunito_bold mb-1 mt-3">
+            <Text className="text-base text-gray-1 font-nunito_bold mb-1 mt-3">
                 Data
             </Text>
             {watch("recordedAt") && (
@@ -207,8 +210,8 @@ export default function BodyMetricsForm({patientId, closeBottomSheet}: Props) {
                     <Text className="text-red-500">clique aqui se quiser remover a data</Text>
                 </TouchableOpacity>
             )}
-            <TouchableOpacity onPress={()=> setShowDatePicker(true)} className="bg-white border border-gray-5 rounded-md p-4">
-                <Text>{watch("recordedAt") ? new Date(watch("recordedAt")!).toLocaleDateString("pt-BR") : "Selecionar data"}</Text>
+            <TouchableOpacity onPress={()=> setShowDatePicker(true)} className="bg-white text-gray-3 border border-gray-5 rounded-md p-4">
+                <Text className='text-gray-3'>{watch("recordedAt") ? new Date(watch("recordedAt")!).toLocaleDateString("pt-BR") : "Selecionar data"}</Text>
             </TouchableOpacity>
             {showDatePicker && (
                 <DateTimePicker

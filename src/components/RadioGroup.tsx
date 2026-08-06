@@ -34,7 +34,7 @@ export function RadioGroup<T extends string>({
               }
             `}
           >
-            <Text className="text-base font-nunito_regular">
+            <Text className="text-gray-3 text-base font-nunito_regular">
               {option.label}
             </Text>
 

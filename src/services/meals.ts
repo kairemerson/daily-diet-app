@@ -7,10 +7,10 @@ export type CreateMealDTO = {
     time: string
     isOnDiet: boolean
     mealPlanItemId?: string,
-    consumedCalories?: number
-    consumedProtein?: number
-    consumedCarbs?: number
-    consumedFat?: number
+    consumedCalories?: number | null
+    consumedProtein?: number | null
+    consumedCarbs?: number | null
+    consumedFat?: number | null
 }
 
 export type Meal = {
