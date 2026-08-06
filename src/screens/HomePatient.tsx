@@ -78,6 +78,7 @@ export function HomePatient() {
         return "Vamos focar essa semana 🚀"
     }
 
+    console.log(user?.name.substring(0,1));
     
     
   return (
@@ -87,7 +88,7 @@ export function HomePatient() {
             data={sortedMeals}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 80 }}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
 
             ListHeaderComponent={
                 <>
@@ -101,7 +102,10 @@ export function HomePatient() {
                         </View>
 
                         <TouchableOpacity onPress={signOut}>
-                        <View className="w-11 h-11 bg-gray-200 rounded-2xl" />
+                            <View className="w-11 h-11 justify-center items-center bg-gray-200 rounded-2xl" >
+                                <Text className="font-nunito_bold text-green-dark text-2xl">{user?.name.substring(0,1)}</Text>
+                                
+                            </View>
                         </TouchableOpacity>
                     </View>
 
@@ -225,7 +229,7 @@ export function HomePatient() {
                             </>
                         ) : (
                             <Text className="text-green-500 font-nunito_bold">
-                                Todas refeições concluídas hoje 🎉
+                                Todas as refeições concluídas hoje 🎉
                             </Text>
                         )}
 
@@ -248,7 +252,7 @@ export function HomePatient() {
 
                 return(
                     <TouchableOpacity
-                        className="bg-white p-5 rounded-2xl mb-4 shadow-sm"
+                        className="bg-white px-5 py-3 rounded-2xl mb-4 shadow-sm"
                         activeOpacity={0.7}
                         onPress={() =>
                             navigation.navigate("MealForm", {
@@ -258,7 +262,7 @@ export function HomePatient() {
                     >
                         <View className="flex-row justify-between items-center">
                             <View>
-                                <Text className={`mt-2 text-sm font-nunito_bold ${status.color}`}>
+                                <Text className={`text-sm font-nunito_bold ${status.color}`}>
                                     {status.label}
                                 </Text>
                                 <Text className="text-lg font-semibold text-gray-800">
@@ -287,7 +291,7 @@ export function HomePatient() {
       
         {/* BOTÃO FLUTUANTE (Refeição Livre) */}
         <TouchableOpacity
-            className="absolute bottom-8 right-6 bg-green-dark w-16 h-16 rounded-full items-center justify-center shadow-lg"
+            className="absolute bottom-6 right-6 bg-green-dark w-16 h-16 rounded-full items-center justify-center shadow-lg"
             onPress={() => navigation.navigate("MealForm")}
         >
             <Feather name="plus" size={26} color="white" />

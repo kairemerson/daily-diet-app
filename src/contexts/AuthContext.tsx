@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from "react";
-import { getUser, removeUser, saveUser, StoredUser } from "../storage/userStorage";
+import { getUser, removeUser, saveUser, StoredUser, updateUserStorage } from "../storage/userStorage";
 import { api, registerSignOut } from "../services/api";
 
 
@@ -9,6 +9,7 @@ type AuthContextData = {
   loading: boolean
   signIn: (user: StoredUser, token: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUser: (userData: StoredUser) => Promise<void>
 };
 
 const AuthContext = createContext({} as AuthContextData);
@@ -31,6 +32,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setToken(null);
   }, []);
+
+  const updateUser = useCallback(async (userData: StoredUser) => {
+    await updateUserStorage(userData)
+    setUser(userData)
+  }, [])
 
   async function loadUser() {
       try {
@@ -63,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, token, loading, signIn, signOut, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -84,16 +84,16 @@ export default function MealDetails() {
     <View className='flex-1'>
         <HeaderPage variant={meal?.isOnDiet ? "primary" : "secondary"} title='Refeição'/>
 
-        <View className='flex-1 bg-white text-gray-1 rounded-t-3xl px-6 py-12 -mt-4'>
-            <Text className='font-nunito_bold text-xl mb-2'>{meal?.name}</Text>
+        <View className='flex-1 bg-white rounded-t-3xl px-6 py-12 -mt-3'>
+            <Text className='font-nunito_bold text-gray-2 text-xl mb-2'>{meal?.name}</Text>
 
             {meal?.description && (
-                <Text className='font-nunito_regular text-base text-gray-2 mb-10'>{meal.description}</Text>
+                <Text className='font-nunito_bold text-base text-gray-4 mb-10'>{meal.description}</Text>
 
             )}
 
-            <Text className='font-nunito_bold text-gray-1 text-sm mb-2'>Data e hora</Text>
-            <Text className='font-nunito_regular text-base text-gray-2 mb-10'>{dayjs(meal?.date ?? "").format("DD/MM/YYYY")} às {meal?.time ?? ""}</Text>
+            <Text className='font-nunito_bold text-gray-3 text-sm mb-2'>Data e hora</Text>
+            <Text className='font-nunito_bold text-base text-gray-4 mb-10'>{dayjs(meal?.date ?? "").format("DD/MM/YYYY")} às {meal?.time ?? ""}</Text>
 
             <View className={`flex-row ${meal?.isOnDiet ? "bg-green-light" : "bg-red-light"} items-center justify-center w-[144] gap-2 px-4 py-2 rounded-full`}>
                 <View className={`h-3 w-3 rounded-full ${meal?.isOnDiet ? "bg-green-dark" : "bg-red-dark"}`}/>

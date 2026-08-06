@@ -5,6 +5,11 @@ export type StoredUser = {
     name: string
     email: string
     role: "ADMIN" | "PATIENT"
+    isPro: boolean
+    plan: "FREE" | "STARTER" | "PRO" | "PREMIUM"; 
+    maxPatients: number;                         
+    currentPatientsCount: number;
+    isSubscriptionExpired: boolean
 }
 
 const DAILY_DIET_USER_KEY = "@dailyDiet:user"
@@ -31,4 +36,8 @@ export async function getUser() {
 export async function removeUser() {
     await AsyncStorage.removeItem(DAILY_DIET_USER_KEY)
     await AsyncStorage.removeItem(DAILY_DIET_TOKEN_KEY)
+}
+
+export async function updateUserStorage(userData: StoredUser) {
+    await AsyncStorage.setItem(DAILY_DIET_USER_KEY, JSON.stringify(userData))
 }

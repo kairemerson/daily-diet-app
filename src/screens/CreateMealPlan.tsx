@@ -131,7 +131,7 @@ export default function CreateMealPlan() {
                     text1: "Plano alimentar atualizada!",
                 });
 
-                navigation.navigate("HomeAdmin")
+                navigation.navigate("AdminTabs")
             } else  {
                 await createMutation.mutateAsync({
                     ...data,
@@ -171,44 +171,85 @@ export default function CreateMealPlan() {
   return (
     <View className='flex-1 bg-gray-7'>
         <HeaderPage title='Plano alimentar'/>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          className="px-6 pt-6 "
-        >
+        <View className='bg-gray-7 rounded-t-3xl -mt-3'>
 
-            <View className='mb-64'>
-                 <AppInput 
-                    control={control}
-                    name="title"
-                    label="Nome"
-                    placeholder="Digite seu nome"
-                    icon="person-outline"
-                />
+            <ScrollView
+            showsVerticalScrollIndicator={false}
+            className="px-6 pt-6 "
+            >
 
-                 <AppInput
-                    name="description"
-                    control={control}
-                    label="Descrição"
-                    placeholder="Digite uma descrição"
-                    icon="edit-note"
-                    multiline
-                    className="w-full h-20"
-                />
+                <View className='mb-64'>
+                    <AppInput 
+                        control={control}
+                        name="title"
+                        label="Nome"
+                        placeholder="Digite seu nome"
+                        icon="person-outline"
+                    />
 
-                <Text className="text-base font-nunito_bold mb-2">
-                    Calorias
-                </Text>
-                <Controller
-                    control={control}
-                    name="caloriesTarget"
-                    render={({ field: { onChange, value }, fieldState: { error } }) => (
-                        <View
+                    <AppInput
+                        name="description"
+                        control={control}
+                        label="Descrição"
+                        placeholder="Digite uma descrição"
+                        icon="edit-note"
+                        multiline
+                        className="w-full h-20 text-gray-3"
+                    />
+
+                    <Text className="text-gray-1 text-base font-nunito_bold mb-2">
+                        Calorias
+                    </Text>
+                    <Controller
+                        control={control}
+                        name="caloriesTarget"
+                        render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <View
+                                className={`flex-row items-center bg-white rounded-md px-3 border ${
+                                    error ? "border-red-dark" : "border-gray-5"
+                                }`}
+                                >
+                                <MaterialIcons
+                                    name="local-fire-department"
+                                    size={20}
+                                    color={colors.gray[4]}
+                                    style={{ marginRight: 8 }}
+                                />
+
+                                <TextInput
+                                    value={value ? String(value) : ""}
+                                    onChangeText={(text) => {
+                                    const formatted = formatInteger(text)
+                                        onChange(formatted)
+                                    }}
+                                    keyboardType="numeric"
+                                    placeholder="Ex: 2200"
+                                    placeholderTextColor={colors.gray[4]}
+                                    className="w-full text-gray-3"
+                                />
+                                
+                            </View>
+                        )}
+                    />
+                    {errors.caloriesTarget && (
+                        <Text className="text-red-dark mt-1">{errors.caloriesTarget.message}</Text>
+                    )}
+
+
+                    <Text className="text-gray-1 text-base font-nunito_bold mb-2 mt-2">
+                        Proteinas
+                    </Text>
+                    <Controller
+                        control={control}
+                        name="proteinTarget"
+                        render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <View
                             className={`flex-row items-center bg-white rounded-md px-3 border ${
                                 error ? "border-red-dark" : "border-gray-5"
                             }`}
                             >
                             <MaterialIcons
-                                name="local-fire-department"
+                                name="fitness-center"
                                 size={20}
                                 color={colors.gray[4]}
                                 style={{ marginRight: 8 }}
@@ -217,199 +258,164 @@ export default function CreateMealPlan() {
                             <TextInput
                                 value={value ? String(value) : ""}
                                 onChangeText={(text) => {
-                                const formatted = formatInteger(text)
-                                    onChange(formatted)
+                                const formatted = formatDecimal(text)
+                                onChange(formatted)
                                 }}
                                 keyboardType="numeric"
-                                placeholder="Ex: 2200"
+                                placeholder="Ex: 150.5"
                                 placeholderTextColor={colors.gray[4]}
-                                className="w-full"
+                                className="w-full text-gray-3"
                             />
-                            
-                        </View>
-                    )}
-                />
-                {errors.caloriesTarget && (
-                    <Text className="text-red-dark mt-1">{errors.caloriesTarget.message}</Text>
-                )}
-
-
-                <Text className="text-base font-nunito_bold mb-2 mt-2">
-                    Proteinas
-                </Text>
-                <Controller
-                    control={control}
-                    name="proteinTarget"
-                    render={({ field: { onChange, value }, fieldState: { error } }) => (
-                        <View
-                        className={`flex-row items-center bg-white rounded-md px-3 border ${
-                            error ? "border-red-dark" : "border-gray-5"
-                        }`}
-                        >
-                        <MaterialIcons
-                            name="fitness-center"
-                            size={20}
-                            color={colors.gray[4]}
-                            style={{ marginRight: 8 }}
-                        />
-
-                        <TextInput
-                            value={value ? String(value) : ""}
-                            onChangeText={(text) => {
-                            const formatted = formatDecimal(text)
-                            onChange(formatted)
-                            }}
-                            keyboardType="numeric"
-                            placeholder="Ex: 150.5"
-                            placeholderTextColor={colors.gray[4]}
-                            className="w-full"
-                        />
-                        </View>
-                    )}
-                />
-                {errors.proteinTarget && (
-                    <Text className="text-red-dark mt-1">{errors.proteinTarget.message}</Text>
-                )}
-
-                <Text className="text-base font-nunito_bold mb-2 mt-2">
-                    Carboidratos
-                </Text>
-                <Controller
-                    control={control}
-                    name="carbsTarget"
-                    render={({ field: { onChange, value }, fieldState: { error } }) => (
-                        <View
-                        className={`flex-row items-center bg-white rounded-md px-3 border ${
-                            error ? "border-red-dark" : "border-gray-5"
-                        }`}
-                        >
-                        <MaterialIcons
-                            name="fitness-center"
-                            size={20}
-                            color={colors.gray[4]}
-                            style={{ marginRight: 8 }}
-                        />
-
-                        <TextInput
-                            value={value ? String(value) : ""}
-                            onChangeText={(text) => {
-                            const formatted = formatDecimal(text)
-                            onChange(formatted)
-                            }}
-                            keyboardType="numeric"
-                            placeholder="Ex: 150.5"
-                            placeholderTextColor={colors.gray[4]}
-                            className="w-full"
-                        />
-                        </View>
-                    )}
-                />
-                {errors.carbsTarget && (
-                    <Text className="text-red-dark mt-1">{errors.carbsTarget.message}</Text>
-                )}
-
-                <Text className="text-base font-nunito_bold mb-2 mt-2">
-                    Gordura
-                </Text>
-                <Controller
-                    control={control}
-                    name="fatTarget"
-                    render={({ field: { onChange, value }, fieldState: { error } }) => (
-                        <View
-                        className={`flex-row items-center bg-white rounded-md px-3 border ${
-                            error ? "border-red-dark" : "border-gray-5"
-                        }`}
-                        >
-                        <MaterialIcons
-                            name="fitness-center"
-                            size={20}
-                            color={colors.gray[4]}
-                            style={{ marginRight: 8 }}
-                        />
-
-                        <TextInput
-                            value={value ? String(value) : ""}
-                            onChangeText={(text) => {
-                            const formatted = formatDecimal(text)
-                            onChange(formatted)
-                            }}
-                            keyboardType="numeric"
-                            placeholder="Ex: 150.5"
-                            placeholderTextColor={colors.gray[4]}
-                            className="w-full"
-                        />
-                        </View>
-                    )}
-                />
-                {errors.fatTarget && (
-                    <Text className="text-red-dark mt-1">{errors.fatTarget.message}</Text>
-                )}
-
-                <Text className="text-base font-nunito_bold mb-2 mt-2">
-                    Data inicio
-                </Text>
-                
-
-                <TouchableOpacity onPress={()=> setShowStartDatePicker(true)} className="bg-white border border-gray-5 rounded-md p-4">
-                    <Text>{watch("startDate") ? new Date(watch("startDate")).toLocaleDateString("pt-BR") : "Selecionar data"}</Text>
-                </TouchableOpacity>
-                {showStartDatePicker && (
-                    <DateTimePicker
-                        mode="date"
-                        value={watch("startDate") ? new Date(watch("startDate")) : new Date()}
-                        onChange={(event, selectedDate)=> {
-                            setShowStartDatePicker(false)
-                            if(selectedDate) {
-                                setValue("startDate", selectedDate.toISOString())
-                            }
-                        }}
+                            </View>
+                        )}
                     />
-                )}
-                {errors.startDate && (
-                    <Text className="text-red-dark mt-1">{errors.startDate.message}</Text>
-                )}
+                    {errors.proteinTarget && (
+                        <Text className="text-red-dark mt-1">{errors.proteinTarget.message}</Text>
+                    )}
 
-                <Text className="text-base font-nunito_bold mb-2 mt-2">
-                    Data final
-                </Text>
-                {watch("endDate") && (
-                    <TouchableOpacity
-                        onPress={() => setValue("endDate", undefined)}
-                    >
-                        <Text className="text-red-500">clique aqui para remover data final</Text>
+                    <Text className="text-gray-1 text-base font-nunito_bold mb-2 mt-2">
+                        Carboidratos
+                    </Text>
+                    <Controller
+                        control={control}
+                        name="carbsTarget"
+                        render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <View
+                            className={`flex-row items-center bg-white rounded-md px-3 border ${
+                                error ? "border-red-dark" : "border-gray-5"
+                            }`}
+                            >
+                            <MaterialIcons
+                                name="fitness-center"
+                                size={20}
+                                color={colors.gray[4]}
+                                style={{ marginRight: 8 }}
+                            />
+
+                            <TextInput
+                                value={value ? String(value) : ""}
+                                onChangeText={(text) => {
+                                const formatted = formatDecimal(text)
+                                onChange(formatted)
+                                }}
+                                keyboardType="numeric"
+                                placeholder="Ex: 150.5"
+                                placeholderTextColor={colors.gray[4]}
+                                className="w-full text-gray-3"
+                            />
+                            </View>
+                        )}
+                    />
+                    {errors.carbsTarget && (
+                        <Text className="text-red-dark mt-1">{errors.carbsTarget.message}</Text>
+                    )}
+
+                    <Text className="text-gray-1 text-base font-nunito_bold mb-2 mt-2">
+                        Gordura
+                    </Text>
+                    <Controller
+                        control={control}
+                        name="fatTarget"
+                        render={({ field: { onChange, value }, fieldState: { error } }) => (
+                            <View
+                            className={`flex-row items-center bg-white rounded-md px-3 border ${
+                                error ? "border-red-dark" : "border-gray-5"
+                            }`}
+                            >
+                            <MaterialIcons
+                                name="fitness-center"
+                                size={20}
+                                color={colors.gray[4]}
+                                style={{ marginRight: 8 }}
+                            />
+
+                            <TextInput
+                                value={value ? String(value) : ""}
+                                onChangeText={(text) => {
+                                const formatted = formatDecimal(text)
+                                onChange(formatted)
+                                }}
+                                keyboardType="numeric"
+                                placeholder="Ex: 150.5"
+                                placeholderTextColor={colors.gray[4]}
+                                className="w-full text-gray-3"
+                            />
+                            </View>
+                        )}
+                    />
+                    {errors.fatTarget && (
+                        <Text className="text-red-dark mt-1">{errors.fatTarget.message}</Text>
+                    )}
+
+                    <Text className="text-gray-1 text-base font-nunito_bold mb-2 mt-2">
+                        Data inicio
+                    </Text>
+                    
+
+                    <TouchableOpacity onPress={()=> setShowStartDatePicker(true)} className="bg-white border border-gray-5 rounded-md p-4">
+                        <Text className='text-gray-3'>{watch("startDate") ? new Date(watch("startDate")).toLocaleDateString("pt-BR") : "Selecionar data"}</Text>
                     </TouchableOpacity>
-                )}
-                <TouchableOpacity onPress={()=> setShowEndDatePicker(true)} className="bg-white border border-gray-5 rounded-md p-4">
-                    <Text>{watch("endDate") ? new Date(watch("endDate")!).toLocaleDateString("pt-BR") : "Selecionar data"}</Text>
-                </TouchableOpacity>
-                {showEndDatePicker && (
-                    <DateTimePicker
-                        mode="date"
-                        value={watch("endDate") ? new Date(watch("endDate")!) : new Date()}
-                        onChange={(event, selectedDate)=> {
-                            setShowEndDatePicker(false)
+                    {showStartDatePicker && (
+                        <DateTimePicker
+                            mode="date"
+                            value={watch("startDate") ? new Date(watch("startDate")) : new Date()}
+                            onChange={(event, selectedDate)=> {
+                                setShowStartDatePicker(false)
+                                if(selectedDate) {
+                                    setValue("startDate", selectedDate.toISOString())
+                                }
+                            }}
+                        />
+                    )}
+                    {errors.startDate && (
+                        <Text className="text-red-dark mt-1">{errors.startDate.message}</Text>
+                    )}
 
-                            if(event.type === "dismissed") {
-                                return
-                            }
+                    <Text className="text-gray-1 text-base font-nunito_bold mb-2 mt-2">
+                        Data final
+                    </Text>
 
-                            if(selectedDate) {
-                                setValue("endDate", selectedDate.toISOString(), {
-                                    shouldValidate: true
-                                })
-                            }
-                        }}
-                    />
-                )}
-                {errors.endDate && (
-                    <Text className="text-red-dark mt-1">{errors.endDate.message}</Text>
-                )}
-                
+                    {watch("endDate") && (
+                        <TouchableOpacity
+                            onPress={() => setValue("endDate", undefined)}
+                        >
+                            <Text className="text-red-500">clique aqui para remover data final</Text>
+                        </TouchableOpacity>
+                    )}
 
-                <Button title='Salvar' className='mt-8' onPress={handleSubmit(onSubmit)}/>
-            </View>
+                    <TouchableOpacity onPress={()=> setShowEndDatePicker(true)} className="bg-white border border-gray-5 text-gray-3 rounded-md p-4">
+                        <Text className='text-gray-3'>{watch("endDate") ? new Date(watch("endDate")!).toLocaleDateString("pt-BR") : "Selecionar data"}</Text>
+                    </TouchableOpacity>
 
-        </ScrollView>
+                    {showEndDatePicker && (
+                        <DateTimePicker
+                            mode="date"
+                            value={watch("endDate") ? new Date(watch("endDate")!) : new Date()}
+                            onChange={(event, selectedDate)=> {
+                                setShowEndDatePicker(false)
+
+                                if(event.type === "dismissed") {
+                                    return
+                                }
+
+                                if(selectedDate) {
+                                    setValue("endDate", selectedDate.toISOString(), {
+                                        shouldValidate: true
+                                    })
+                                }
+                            }}
+                        />
+                    )}
+                    {errors.endDate && (
+                        <Text className="text-red-dark mt-1">{errors.endDate.message}</Text>
+                    )}
+                    
+
+                    <Button title='Salvar' className='mt-8' onPress={handleSubmit(onSubmit)}/>
+                </View>
+
+            </ScrollView>
+        </View>
 
     </View>
 

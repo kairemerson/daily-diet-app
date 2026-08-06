@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MealItem } from '../components/MealItem';
 import { Header } from '../components/Header';
 import dayjs from 'dayjs';
+import { HeaderPage } from '../components/HeaderPage';
 
 export function MealsHistory() {
 
@@ -19,13 +20,12 @@ export function MealsHistory() {
     })
     
   return (
-     <SafeAreaView className="flex-1 bg-background px-6">  
+    <View className="flex-1 bg-gray-7">  
     
-          {/* Button */}
-          <Text className="font-nunito_bold text-lg text-center text-gray-3 mt-6">
-            Refeições
-          </Text>
-        
+      <HeaderPage title='Refeições' />
+      
+      <View className='bg-gray-7 px-6 rounded-t-3xl -mt-3'>
+
           {/* List */}
           <SectionList
             sections={meals}
@@ -38,14 +38,15 @@ export function MealsHistory() {
             )}
             ListEmptyComponent={() => (
               <View className="mt-20">
-                <Text className="text-center text-gray-3 font-nunito_regular">Nenhum item na lista, Adicione uma refeição!</Text>
+                <Text className="text-center text-base text-gray-4 font-nunito_regular">Nenhum item na lista, Adicione uma refeição!</Text>
               </View>
             )}
             contentContainerStyle={{marginTop: 6, paddingBottom: 0}}
             style={{marginBottom: 20}}
             showsVerticalScrollIndicator={false}
           />
-        </SafeAreaView>
+      </View>
+    </View>
   )
 }
 

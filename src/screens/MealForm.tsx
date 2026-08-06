@@ -54,7 +54,7 @@ export function MealForm() {
         queryFn: () => getMealPlanItemByIdRequest(mealPlanItemId!),
         enabled: !!mealPlanItemId,
     });
-    console.log("MealForm => mealPlanItemData: ", {mealPlanItemData, mealData});
+    // console.log("MealForm => mealPlanItemData: ", {mealPlanItemData, mealData});
     
 
     const queryClient = useQueryClient()
@@ -74,7 +74,8 @@ export function MealForm() {
     })
 
     async function onSubmit(data: MealFormData) {
-
+        // console.log("MealForm: data =>", data);
+        
         try {
             if(isEditing) {
                 await updateMutation.mutateAsync({
@@ -112,6 +113,8 @@ export function MealForm() {
                 text2: error.response.data.message,
                 
             })
+            console.log("Error: ", error, error.response.data.issues);
+            
         }
     }
 
@@ -158,9 +161,9 @@ export function MealForm() {
         <View className="flex-1 bg-white">
             <HeaderPage variant="neutral" title={isEditing ? "Editar refeição" : "Nova refeição"}/>
 
-            <ScrollView className="flex-1 bg-white rounded-t-3xl px-6 py-6  -mt-4">
+            <ScrollView className="flex-1 bg-white rounded-t-3xl px-6 py-6 -mt-3">
                 
-                <Text className="font-nunito_bold text-base mb-1">Nome</Text>
+                <Text className="font-nunito_bold text-base text-gray-1 mb-1">Nome</Text>
                 <Controller
                     control={control}
                     name="name"
@@ -177,7 +180,7 @@ export function MealForm() {
                     <Text className="text-red-dark mt-1">{errors.name.message}</Text>
                 )}
 
-                <Text className="font-nunito_bold text-base mt-2 mb-1">Descrição</Text>
+                <Text className="font-nunito_bold text-base text-gray-1 mt-2 mb-1">Descrição</Text>
                 <Controller
                     control={control}
                     name="description"
@@ -187,14 +190,15 @@ export function MealForm() {
                             onChangeText={onChange}
                             multiline
                             textAlignVertical="top"
-                            className="bg-white border border-gray-5 rounded-md p-4 h-24"
+                            className="bg-white border border-gray-5 text-gray-3 rounded-md p-4 h-24"
+                            
                         />
                     )}
                 />
 
-                <Text className="font-nunito_bold text-base mt-2 mb-1">Data</Text>
+                <Text className="font-nunito_bold text-base text-gray-1 mt-2 mb-1">Data</Text>
                 <TouchableOpacity onPress={()=> setShowDatePicker(true)} className="bg-white border border-gray-5 rounded-md p-4">
-                    <Text>{watch("date") || "Selecionar data"}</Text>
+                    <Text className="text-gray-3">{watch("date") || "Selecionar data"}</Text>
                 </TouchableOpacity>
                 {/*possivel erro: Se quiser, posso também te mostrar um bug muito comum que acontece com React Native + date picker + timezone, 
                 que provavelmente vai aparecer no seu app quando usuários registrarem refeições perto da meia-noite. */}
@@ -220,7 +224,7 @@ export function MealForm() {
                     <Text className="text-red-dark mt-1">{errors.date.message}</Text>
                 )}
 
-                <Text className="font-nunito_bold text-base mt-2 mb-1">Hora</Text>
+                <Text className="font-nunito_bold text-base text-gray-1 mt-2 mb-1">Hora</Text>
                 <Controller
                     control={control}
                     name="time"
@@ -232,7 +236,7 @@ export function MealForm() {
                             maxLength={5}
                             placeholder="Ex: 12:00"
                             placeholderTextColor={colors.gray[4]}
-                            className="bg-white border border-gray-5 rounded-md p-4"
+                            className="bg-white text-gray-3 border border-gray-5 rounded-md p-4"
                         />
                     )}
                 />
@@ -240,7 +244,7 @@ export function MealForm() {
                     <Text className="text-red-dark mt-1">{errors.time.message}</Text>
                 )}
 
-                <Text className="font-nunito_bold text-base mt-3 mb-1">Está dentro da dieta?</Text>
+                <Text className="font-nunito_bold text-base text-gray-1 mt-3 mb-1">Está dentro da dieta?</Text>
                 <View className="flex-row gap-3">
                     <TouchableOpacity
                         activeOpacity={0.5}
@@ -249,7 +253,7 @@ export function MealForm() {
                             ${watch("isOnDiet") ? "bg-green-light border border-green-dark" : "bg-gray-6"}`}
                         >
                         <View className="h-3 w-3 bg-green-dark rounded-full"/>
-                        <Text>Sim</Text>
+                        <Text className="text-gray-3">Sim</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -259,14 +263,14 @@ export function MealForm() {
                             ${watch("isOnDiet") === false ? "bg-red-light border border-red-dark" : "bg-gray-6"}`}
                         >
                         <View className="h-3 w-3 bg-red-dark rounded-full"/>
-                        <Text>Não</Text>
+                        <Text className="text-gray-3">Não</Text>
                     </TouchableOpacity>
                 </View>
 
                     {mealPlanItemData && (
                         <View className="bg-green-light p-4 rounded-2xl mt-4 mb-4 border border-green-mid">
                             <Text className="font-bold text-green-dark mb-2">
-                            Metas desta refeição
+                                Metas desta refeição
                             </Text>
 
                             <Text className="text-gray-700">
@@ -284,10 +288,10 @@ export function MealForm() {
                         </View>
                     )}
 
-                    <Text className="text-base font-nunito_bold mt-2 text-gray-700">
+                    <Text className="text-lg font-nunito_bold mt-2 text-green-dark">
                         Consumo Real
                     </Text>
-                    <Text className="text-base font-nunito_bold mb-1 mt-2">
+                    <Text className="text-base text-gray-1 font-nunito_bold mb-1 mt-2">
                         Calorias
                     </Text>
                     <Controller
@@ -307,22 +311,26 @@ export function MealForm() {
                                 />
 
                                 <TextInput
-                                    value={value !== undefined && value !== null ? String(value) : ""}
+                                    value={value && value !== 0 ? String(value) : ""}
                                     onChangeText={(text) => {
-                                    const formatted = formatInteger(text)
-                                        onChange(formatted)
+                                        if (!text) {
+                                            onChange(""); // Deixa vazio no formulário temporariamente
+                                            return;
+                                        }
+                                        const formatted = formatInteger(text);
+                                        onChange(formatted);
                                     }}
                                     keyboardType="numeric"
                                     placeholder="Ex: 2200"
                                     placeholderTextColor={colors.gray[4]}
-                                    className="w-full"
+                                    className="w-full text-gray-3"
                                 />
                                 
                             </View>
                         )}
                     />
 
-                    <Text className="text-base font-nunito_bold mb-1 mt-2">
+                    <Text className="text-base text-gray-1 font-nunito_bold mb-1 mt-2">
                         Proteinas
                     </Text>
                     <Controller
@@ -342,21 +350,30 @@ export function MealForm() {
                             />
         
                             <TextInput
-                                value={value !== undefined && value !== null ? String(value) : ""}
+                                value={value && value !== 0 ? String(value) : ""}
                                 onChangeText={(text) => {
-                                const formatted = formatDecimal(text)
-                                onChange(formatted)
+                                    if (!text) {
+                                        onChange(""); // Deixa vazio no formulário temporariamente
+                                        return;
+                                    }
+                                    const formatted = formatDecimal(text);
+                                    onChange(formatted);
                                 }}
                                 keyboardType="numeric"
                                 placeholder="Ex: 150.5"
                                 placeholderTextColor={colors.gray[4]}
-                                className="w-full"
+                                className="w-full text-gray-3"
                             />
                             </View>
                         )}
                     />
+                    {errors.consumedProtein && (
+                        <Text className='text-red-dark text-xs mt-1'>
+                            {errors.consumedProtein.message}
+                        </Text>
+                    )}
 
-                    <Text className="text-base font-nunito_bold mb-1 mt-2">
+                    <Text className="text-base text-gray-1 font-nunito_bold mb-1 mt-2">
                         Carboidratos
                     </Text>
                     <Controller
@@ -376,21 +393,25 @@ export function MealForm() {
                             />
         
                             <TextInput
-                                value={value !== undefined && value !== null ? String(value) : ""}
+                                value={value && value !== 0 ? String(value) : ""}
                                 onChangeText={(text) => {
-                                const formatted = formatDecimal(text)
-                                onChange(formatted)
+                                    if (!text) {
+                                        onChange(""); // Deixa vazio no formulário temporariamente
+                                        return;
+                                    }
+                                    const formatted = formatDecimal(text);
+                                    onChange(formatted);
                                 }}
                                 keyboardType="numeric"
                                 placeholder="Ex: 150.5"
                                 placeholderTextColor={colors.gray[4]}
-                                className="w-full"
+                                className="w-full text-gray-3"
                             />
                             </View>
                         )}
                     />
 
-                    <Text className="text-base font-nunito_bold mb-1 mt-2">
+                    <Text className="text-base text-gray-1 font-nunito_bold mb-1 mt-2">
                         Gordura
                     </Text>
                     <Controller
@@ -410,19 +431,29 @@ export function MealForm() {
                             />
         
                             <TextInput
-                                value={value !== undefined && value !== null ? String(value) : ""}
+                                value={value && value !== 0 ? String(value) : ""}
                                 onChangeText={(text) => {
-                                const formatted = formatDecimal(text)
-                                onChange(formatted)
+                                    if (!text) {
+                                        onChange(""); // Deixa vazio no formulário temporariamente
+                                        return;
+                                    }
+                                    const formatted = formatDecimal(text);
+                                    onChange(formatted);
                                 }}
                                 keyboardType="numeric"
                                 placeholder="Ex: 150.5"
                                 placeholderTextColor={colors.gray[4]}
-                                className="w-full"
+                                className="w-full text-gray-3"
                             />
+
                             </View>
                         )}
                     />
+                    {errors.consumedFat && (
+                        <Text className='text-red-dark text-xs mt-1'>
+                            {errors.consumedFat.message}
+                        </Text>
+                    )}
                 
                 
                 <View className="mt-10 mb-16">

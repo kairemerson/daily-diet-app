@@ -6,7 +6,7 @@ type Props = {
 
 export function Header({ title }: Props) {
   return (
-    <Text className="text-lg font-nunito_bold mt-6 mb-3">
+    <Text className="text-lg text-gray-3 font-nunito_bold mt-6 mb-3">
       {title}
     </Text>
   );

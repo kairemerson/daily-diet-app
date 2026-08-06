@@ -22,7 +22,7 @@ export function SuccessScreen() {
       </Text>
       
       <Text className='text-gray-1 text-base text-center mt-4 px-4 leading-relaxed'>
-        Parabéns! Você agora é <Text className='font-nunito_bold text-green-dark'>Premium</Text>. 
+        Parabéns! Você agora é <Text className='font-nunito_bold text-green-dark'>Assinante</Text>. 
         Todos os recursos avançados e limites foram desbloqueados para você.
       </Text>
 

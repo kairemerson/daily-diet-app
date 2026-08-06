@@ -28,7 +28,7 @@ export function MealHistory() {
         <View className="flex-1 bg-gray-7">
             <HeaderPage title="Histórico de refeições"/>
         
-            <View className="flex-1 bg-gray-7 rounded-t-3xl pt-3 -mt-5">
+            <View className="flex-1 bg-gray-7 rounded-t-3xl pt-3 -mt-3">
 
                 <SectionList
                     sections={meals}
@@ -41,7 +41,7 @@ export function MealHistory() {
                     )}
                     ListEmptyComponent={() => (
                         <View className="mt-20">
-                        <Text className="text-center text-gray-3 font-nunito_regular">Nenhum item na lista, paciente ainda não adicionou refeição!</Text>
+                        <Text className="text-center text-gray-4 font-nunito_regular text-base">Nenhum item na lista, paciente ainda não adicionou refeição!</Text>
                         </View>
                     )}
                     contentContainerStyle={{paddingHorizontal: 18}}
