@@ -22,6 +22,12 @@ export type PatientsResponse = {
     totalMeals: number
 }
 
+export interface WeightHistoryPoint {
+  id: string;
+  weight: number;
+  recordedAt: Date;
+}
+
 export type DashboardResponse = {
   adherence: {
     last7Days: number;
@@ -32,12 +38,21 @@ export type DashboardResponse = {
     currentMuscleMass: number;
     currentWeight: number;
     weightDifference: number;
+    weightHistory: WeightHistoryPoint[];
   };
   patient: Pick<CreatePatient, "name" | "goal" | "targetWeight" | "observation"> & {
     id: string;
     status: PatientStatus
   };
 };
+
+export type UpdatePatient = {
+    name: string
+    email: string
+    birthDate?: string
+    height?: number
+    targetWeight?: number
+}
 
 export async function createPatient(data: CreatePatient): Promise<void> {
     const response = await api.post("/patients", data)
@@ -65,6 +80,18 @@ export async function getPatientDashboard() {
 
 export async function updatePatientStatus(patientId: string, status: PatientStatus) {
   const response = await api.patch(`/patients/${patientId}/status`, {status})
+
+  return response.data
+}
+
+export async function getProfilePatientRequest() {
+  const response = await api.get("/patients/profile")
+
+  return response.data
+}
+
+export async function updatePatient(data: UpdatePatient) {
+  const response = await api.put("/patients/profile", data)
 
   return response.data
 }

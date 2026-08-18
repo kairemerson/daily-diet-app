@@ -155,7 +155,7 @@ export default function CreateMealPlan() {
                     text1: "Plano alimentar cadastrado!",
                 });
 
-                navigation.navigate("HomeAdmin")
+                navigation.navigate("AdminTabs")
             }
         } catch (error: any) {
             Toast.show({
@@ -183,7 +183,7 @@ export default function CreateMealPlan() {
                         control={control}
                         name="title"
                         label="Nome"
-                        placeholder="Digite seu nome"
+                        placeholder="Digite o nome"
                         icon="person-outline"
                     />
 

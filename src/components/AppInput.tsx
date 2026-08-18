@@ -12,7 +12,7 @@ type AppInputProps = TextInputProps & {
     icon?: keyof typeof MaterialIcons.glyphMap
 }
 
-export default function AppInput({control, name, label, icon, secureTextEntry, ...rest}: AppInputProps) {
+export default function AppInput({control, name, label, icon, secureTextEntry, editable=true, className, ...rest}: AppInputProps) {
 
     const [isSecure, setIsSecure] = useState(secureTextEntry);
   return (
@@ -28,7 +28,9 @@ export default function AppInput({control, name, label, icon, secureTextEntry, .
         name={name}
         render={({field: {onChange, value}, fieldState: {error}})=> (
             <>
-                <View className={`flex-row items-center bg-white rounded-md px-3 border ${error ? "border-red-dark" : "border-gray-5"}`}>
+                <View className={`flex-row items-center rounded-md px-3 border 
+                    ${!editable ? 'bg-gray-6 border-gray-5 opacity-70' : 'bg-white'} 
+                    ${error ? 'border-red-dark' : 'border-gray-5'}`}>
                     {icon && (
                         <MaterialIcons
                             name={icon}
@@ -40,11 +42,14 @@ export default function AppInput({control, name, label, icon, secureTextEntry, .
                     )}
 
                     <TextInput
-                        className='flex-1 h-12 font-nunito_regular text-base text-gray-1'
+                        className={`flex-1 font-nunito_regular text-base 
+                            ${!editable ? 'text-gray-3' : 'text-gray-1'} 
+                            ${rest.multiline ? 'py-3' : 'h-12'} ${className || ''}`}
                         placeholderTextColor={colors.gray[4]}
                         secureTextEntry={isSecure}
                         value={value}
                         onChangeText={onChange}
+                        editable={editable}
                         {...rest}
                     />
 

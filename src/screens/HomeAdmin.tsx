@@ -60,7 +60,7 @@ export function HomeAdmin() {
   }
   
   useEffect(() => {
-    console.log("HomeAdmin: userProfile =>",userProfile);
+    // console.log("HomeAdmin: userProfile =>",userProfile);
     const isExpired = checkIfSubscriptionExpired();
 
     if (isExpired) {

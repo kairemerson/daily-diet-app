@@ -45,6 +45,7 @@ export type MealPlanWithMealPlanItems = MealPlan & {
         id: string;
         description: string | null;
         name: string;
+        order: number
         targetCalories: number | null;
         targetProtein: number | null;
         targetCarbs: number | null;
