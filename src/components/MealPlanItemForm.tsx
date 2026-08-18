@@ -3,7 +3,7 @@ import React from 'react'
 import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createMealPanItem } from '../services/mealPlanItems'
 import Toast from 'react-native-toast-message'
 import AppInput from './AppInput'
@@ -41,13 +41,14 @@ export function MealPlanItemForm({mealPlanId, closeBottomSheet}: Props) {
         
     })
 
+    const queryClient = useQueryClient()
+
     const {mutate, isPending} = useMutation({
         mutationFn: createMealPanItem,
-        onSuccess: (newMealPlan) => {
-            // queryClient.setQueryData<BodyMetrics[]>(
-            //     ["body-metrics", patientId],
-            //     (old) => old ? [newMealPlan, ...old] : [newMealPlan]
-            // )
+        onSuccess: async (newMealPlan) => {
+
+            await queryClient.invalidateQueries({queryKey: ["dashboard"]})
+
             Toast.show({
                 type: "success",
                 text1: "Item adicionado com sucesso!",

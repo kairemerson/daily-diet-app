@@ -1,5 +1,5 @@
 
-import { View, Text, ScrollView, TouchableOpacity } from "react-native"
+import { View, Text, ScrollView, TouchableOpacity, useWindowDimensions } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import {  MaterialIcons } from "@expo/vector-icons"
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -17,6 +17,7 @@ import { MealPlanItemForm } from "../components/MealPlanItemForm";
 import { PatientActionsMenu } from "../components/PatientActionsMenu";
 import { Skeleton } from "../components/Skeleton";
 import { HeaderPage } from "../components/HeaderPage";
+import { LineChart } from 'react-native-gifted-charts';
 
 type RouteProps = RouteProp<AdminStackParamList, "PatientDetails">
     
@@ -43,6 +44,8 @@ export function PatientDetails() {
       enabled: !!patientId
     })
 
+    const { width: windowWidth } = useWindowDimensions();
+
     // console.log("PatientDetails => dashboard: ", dashboard);
     
     // console.log("PatientDetails = bodyMetrics", calculatedBodyMetrics);
@@ -63,7 +66,19 @@ export function PatientDetails() {
     const activeMealPlan = mealPlans.find((mealPlan) => mealPlan.isActive)
 
     const previousMealPlans = mealPlans.filter((mealPlan) => !mealPlan.isActive).sort((a, b) => new  Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    // console.log("PatientDetails = activeMealPlan", activeMealPlan, previousMealPlans);
+    console.log("PatientDetails = activeMealPlan", activeMealPlan);
+    // console.log("PatientDetails = metrics", metrics);
+
+    const hasLostWeight = metrics.weightDifference !== null && metrics.weightDifference < 0;
+    const formattedWeightDiff = Math.abs(metrics.weightDifference ?? 0).toFixed(2);
+
+    //dados formatados para o gráfico
+    const chartData = metrics?.weightHistory?.map(item => ({
+      value: item.weight,
+      label: new Date(item.recordedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+    })) ?? [];
+
+    const hasChartData = chartData.length > 0;
 
   return (
     <View className="flex-1 bg-gray-7">
@@ -134,29 +149,98 @@ export function PatientDetails() {
             </View>
 
               {metrics.weightDifference !== null && (
-                metrics.weightDifference < 0 ? (
-                    <View className="gap-2 flex-row items-center">
-                      <FontAwesome5  name="arrow-down" size={14} color={colors.green.dark} />
-                      <Text className="text-green-dark font-nunito_bold">
-                        {metrics.weightDifference.toFixed(2) + " "} desde início
-                      </Text>
-                    </View>
-                  ) : (
-                    <View className="gap-2 flex-row items-center">
-                      <FontAwesome5  name="arrow-up" size={14} color={colors.red.dark} />
-                      <Text className="text-red-dark font-nunito_bold">
-                        +{metrics?.weightDifference.toFixed(2) + " "} desde início
-                      </Text>
-                    </View>
-                  )
-
+                <View className="gap-2 flex-row items-center">
+                  <FontAwesome5 
+                    name={hasLostWeight ? "arrow-down" : "arrow-up"} 
+                    size={14} 
+                    color={hasLostWeight ? colors.green.dark : colors.red.dark} 
+                  />
+                  <Text className={hasLostWeight ? "text-green-dark font-nunito_bold" : "text-red-dark font-nunito_bold"}>
+                    {hasLostWeight ? `-${formattedWeightDiff} kg` : `+${formattedWeightDiff} kg`} desde o início
+                  </Text>
+                </View>
               )}
 
-            <View className="h-32 bg-gray-6 rounded-xl mt-4 items-center justify-center">
-              <Text className="text-gray-4">
-                gráfico linha peso
-              </Text>
-            </View>
+              {/* ÁREA DO GRÁFICO DE LINHA */}
+              <View className="mt-4 pt-6 pb-2 -mx-4">
+                {hasChartData ? (
+                  <LineChart
+                    data={chartData}
+                    height={150}
+                    
+                    // 1. LARGURA E ESPAÇAMENTO AJUSTADOS
+                    width={(windowWidth - 64 - 45)}
+                    yAxisLabelWidth={45} // Reserva espaço fixo pro eixo Y
+                    initialSpacing={20}
+                    endSpacing={20} 
+
+                    // Estilização da Linha
+                    color={hasLostWeight ? colors.green.dark : colors.red.dark}
+                    thickness={3}
+                    curved
+                    isAnimated
+                    
+                    // Pontos (Data Points)
+                    dataPointsColor={hasLostWeight ? colors.green.dark : colors.red.dark}
+                    dataPointsRadius={4}
+
+                    // Eixo Y (Grade Lateral Esquerda)
+                    noOfSections={3}
+                    yAxisColor="transparent"
+                    yAxisThickness={0}
+                    yAxisTextStyle={{
+                      color: '#9CA3AF',
+                      fontSize: 10,
+                      fontFamily: 'Nunito_400Regular',
+                    }}
+                    yAxisLabelSuffix="kg"
+
+                    // Eixo X (Datas Abaixo)
+                    xAxisColor="#E5E7EB"
+                    xAxisThickness={1}
+                    xAxisLabelTextStyle={{
+                      color: '#9CA3AF',
+                      fontSize: 10,
+                      fontFamily: 'Nunito_400Regular',
+                    }}
+
+                    // Linhas de Grade Horizontais
+                    rulesType="solid"
+                    rulesColor="#F3F4F6"
+
+                    // Sombra/Área abaixo
+                    areaChart
+                    startFillColor={hasLostWeight ? colors.green.dark : colors.red.dark}
+                    endFillColor={hasLostWeight ? colors.green.dark : colors.red.dark}
+                    startOpacity={0.15}
+                    endOpacity={0.0}
+
+                    // 2. TOOLTIP POSICIONADO ACIMA DO PONTEIRO
+                    pointerConfig={{
+                      pointerStripColor: hasLostWeight ? colors.green.dark : colors.red.dark,
+                      pointerStripWidth: 1.5,
+                      pointerColor: hasLostWeight ? colors.green.dark : colors.red.dark,
+                      radius: 5,
+                      pointerLabelWidth: 80,
+                      pointerLabelHeight: 30,
+                      autoAdjustPointerLabelPosition: true, // Ajusta automático nas bordas
+                      pointerLabelComponent: (items: any) => (
+                        <View className="bg-gray-1 px-2 py-1 rounded shadow-md items-center justify-center self-center -ml-6">
+                          <Text className="text-white text-xs font-nunito_bold">
+                            {items[0]?.value?.toFixed(1)} kg
+                          </Text>
+                        </View>
+                      ),
+                    }}
+                  />
+                ) : (
+                  <View className="h-32 bg-gray-6 rounded-xl mx-4 items-center justify-center">
+                    <Text className="text-gray-4 font-nunito_regular text-sm">
+                      Sem dados de histórico de peso
+                    </Text>
+                  </View>
+                )}
+              </View>
           </AppCard>
 
           {/* OBJETIVO */}
@@ -199,77 +283,144 @@ export function PatientDetails() {
 
           {/* PLANO ALIMENTAR */}
           <AppCard title="Plano Alimentar Ativo" icon="restaurant-menu">
-
-            {activeMealPlan && (
-              <View className="flex-row justify-between items-center gap-3 mb-3">
-                <View className="max-w-[80%]">
-                  <Text className="text-gray-1 font-nunito_bold" numberOfLines={1}>
-                    {activeMealPlan?.title}
-                  </Text>
-                  {
-                    activeMealPlan?.description && (
-                      <Text className="text-gray-3 font-nunito_regular leading-4" numberOfLines={2}>
-                        {activeMealPlan?.description}
+            {activeMealPlan ? (
+              <View>
+                {/* Título e Status */}
+                <View className="flex-row justify-between items-center gap-3 mb-2">
+                  <View className="max-w-[80%]">
+                    <Text className="text-gray-1 font-nunito_bold text-lg" numberOfLines={1}>
+                      {activeMealPlan.title}
+                    </Text>
+                    {activeMealPlan.description && (
+                      <Text className="text-gray-3 font-nunito_regular leading-4 text-xs" numberOfLines={2}>
+                        {activeMealPlan.description}
                       </Text>
-                    )
-                  }
+                    )}
+                  </View>
 
-                </View>
-                
-                <View className={`${activeMealPlan?.isActive ? "bg-green-light" : "bg-red-light"} px-3 py-1  rounded-lg`}>
-                  <Text className={`${activeMealPlan?.isActive ? "text-green-dark" : "text-red-dark"} text-xs font-nunito_bold`}>
-                    {activeMealPlan?.isActive ? "Ativo" : "Inativo"}
-                  </Text>
+                  <View className="bg-green-light px-3 py-1 rounded-lg">
+                    <Text className="text-green-dark text-xs font-nunito_bold">
+                      Ativo
+                    </Text>
+                  </View>
                 </View>
 
+                {/* 1. RESUMO MACRONUTRICIONAL ALVO */}
+                <View className="bg-gray-7 p-3 rounded-xl my-3 flex-row justify-around items-center">
+                  <View className="items-center">
+                    <Text className="text-gray-3 text-xs font-nunito_regular">Calorias</Text>
+                    <Text className="text-gray-1 font-nunito_bold text-sm mt-0.5">
+                      {activeMealPlan.caloriesTarget ?? 0} kcal
+                    </Text>
+                  </View>
+
+                  <View className="w-[1px] h-6 bg-gray-5" />
+
+                  <View className="items-center">
+                    <Text className="text-gray-3 text-xs font-nunito_regular">Proteínas</Text>
+                    <Text className="text-gray-1 font-nunito_bold text-sm mt-0.5">
+                      {activeMealPlan.proteinTarget ?? 0}g
+                    </Text>
+                  </View>
+
+                  <View className="w-[1px] h-6 bg-gray-5" />
+
+                  <View className="items-center">
+                    <Text className="text-gray-3 text-xs font-nunito_regular">Carbos</Text>
+                    <Text className="text-gray-1 font-nunito_bold text-sm mt-0.5">
+                      {activeMealPlan.carbsTarget ?? 0}g
+                    </Text>
+                  </View>
+
+                  <View className="w-[1px] h-6 bg-gray-5" />
+
+                  <View className="items-center">
+                    <Text className="text-gray-3 text-xs font-nunito_regular">Gorduras</Text>
+                    <Text className="text-gray-1 font-nunito_bold text-sm mt-0.5">
+                      {activeMealPlan.fatTarget ?? 0}g
+                    </Text>
+                  </View>
+                </View>
+
+                {/* 2. LISTA DE REFEIÇÕES / ITENS DO PLANO */}
+                {activeMealPlan.mealPlanItems && activeMealPlan.mealPlanItems.length > 0 && (
+                  <View className="mt-1 mb-4 gap-2">
+                    <Text className="text-gray-3 text-xs font-nunito_bold mb-1 uppercase tracking-wider">
+                      Refeições ({activeMealPlan.mealPlanItems.length})
+                    </Text>
+
+                    {activeMealPlan.mealPlanItems
+                      .sort((a, b) => a.order - b.order)
+                      .map((item) => (
+                        <View 
+                          key={item.id} 
+                          className="flex-row justify-between items-center bg-gray-7 px-3 py-2.5 rounded-lg"
+                        >
+                          <View className="flex-row items-center gap-2">
+                            {item.time && (
+                              <Text className="text-green-dark font-nunito_bold text-xs bg-green-light px-1.5 py-0.5 rounded">
+                                {item.time}
+                              </Text>
+                            )}
+                            <Text className="text-gray-1 font-nunito_bold text-sm">
+                              {item.name}
+                            </Text>
+                          </View>
+
+                          {item.targetCalories && (
+                            <Text className="text-gray-3 font-nunito_regular text-xs">
+                              {item.targetCalories} kcal
+                            </Text>
+                          )}
+                        </View>
+                      ))}
+                  </View>
+                )}
+
+                {/* BOTÕES DE AÇÃO */}
+                <View className="gap-2 mt-2">
+                  <Button 
+                    title="Adicionar item" 
+                    onPress={() => open(() => <MealPlanItemForm mealPlanId={activeMealPlan.id} closeBottomSheet={close} />, ["90%"])}
+                  />
+                  <Button 
+                    title="Editar Plano" 
+                    variant="secondary" 
+                    onPress={() => navigation.navigate("CreateMealPlan", { patientId, mealPlanId: activeMealPlan.id })}
+                  />
+                </View>
               </View>
+            ) : (
+              <Text className="font-nunito_regular text-center text-gray-4 my-2">
+                Sem plano ativo, crie um plano para o paciente
+              </Text>
             )}
 
-            {!activeMealPlan && (
-              <Text className="font-nunito_regular text-center text-gray-4">Sem plano, crie um plano</Text>
-            )}
-
-            {/* <Text className="text-gray-3 text-sm mb-4">
-              150g proteína • 180g carbo • 60g gordura
-            </Text> */}
-            
-            <View className="gap-3">
-              {activeMealPlan && (
-                <>
-                  <Button title="Adicionar item" onPress={() => open(() => <MealPlanItemForm mealPlanId={activeMealPlan.id} closeBottomSheet={close} />, ["90%"])}/>
-                  <Button title="Editar Plano" variant="secondary" onPress={() => navigation.navigate("CreateMealPlan", {patientId, mealPlanId: activeMealPlan.id})}/>
-                </>
-              )}
-            </View>
-            
+            {/* HISTÓRICO DE PLANOS ANTERIORES */}
             {previousMealPlans.length > 0 && (
               <>
-                <View className="h-[1px] bg-gray-5 mt-6 mb-3"/>
+                <View className="h-[1px] bg-gray-5 mt-6 mb-3" />
 
                 <Text className="text-gray-4 text-sm font-nunito_bold mb-2">
                   Planos anteriores
                 </Text>
 
                 <View className="gap-2">
-
-                  {previousMealPlans?.slice(0,2).map(plan => (
-
+                  {previousMealPlans.slice(0, 2).map((plan) => (
                     <TouchableOpacity
                       key={plan.id}
                       className="flex-row justify-between items-center bg-gray-7 p-3 rounded-lg"
                       onPress={() =>
                         navigation.navigate("CreateMealPlan", {
                           patientId,
-                          mealPlanId: plan.id
+                          mealPlanId: plan.id,
                         })
                       }
                     >
-
                       <View>
                         <Text className="text-gray-1 font-nunito_bold">
                           {plan.title}
                         </Text>
-
                         <Text className="text-gray-3 text-xs">
                           {plan.caloriesTarget} kcal
                         </Text>
@@ -280,11 +431,8 @@ export function PatientDetails() {
                         size={20}
                         color="#9CA3AF"
                       />
-
                     </TouchableOpacity>
-
                   ))}
-
                 </View>
 
                 <TouchableOpacity
@@ -298,7 +446,6 @@ export function PatientDetails() {
                   </Text>
                 </TouchableOpacity>
               </>
-
             )}
           </AppCard>
 

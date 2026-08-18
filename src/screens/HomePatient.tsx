@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 import { formatTimeLeft } from "../utils/formatTimeLeft";
 
 export function HomePatient() {
-    const { signOut, user } = useAuth();
+    const { user } = useAuth();
     const navigation = useNavigation<PatientNavigationProps>();
 
     const { data: dashboard, isLoading, isError } = useQuery({
@@ -26,7 +26,7 @@ export function HomePatient() {
  
     if(isError) return <Text>Erro ao carregar</Text>
 
-    console.log("HomePatient => dashboard: ", dashboard);
+    // console.log("HomePatient => dashboard: ", dashboard);
 
     const currentStreak = dashboard?.streak?.currentStreak ?? 0
     const bestStreak = dashboard?.streak?.bestStreak ?? 0
@@ -76,10 +76,7 @@ export function HomePatient() {
         if (adherence >= 85) return "Excelente consistência 💪"
         if (adherence >= 60) return "Boa evolução 👏"
         return "Vamos focar essa semana 🚀"
-    }
-
-    console.log(user?.name.substring(0,1));
-    
+    }    
     
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -88,7 +85,7 @@ export function HomePatient() {
             data={sortedMeals}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
 
             ListHeaderComponent={
                 <>
@@ -101,12 +98,10 @@ export function HomePatient() {
                         </Text>
                         </View>
 
-                        <TouchableOpacity onPress={signOut}>
                             <View className="w-11 h-11 justify-center items-center bg-gray-200 rounded-2xl" >
                                 <Text className="font-nunito_bold text-green-dark text-2xl">{user?.name.substring(0,1)}</Text>
                                 
                             </View>
-                        </TouchableOpacity>
                     </View>
 
                     {/* CARD ADERÊNCIA */}
@@ -249,11 +244,13 @@ export function HomePatient() {
             renderItem={({ item }) => {
 
                 const status = getMealStatus(item)
+                const isCompleted = item.completedToday
 
                 return(
                     <TouchableOpacity
-                        className="bg-white px-5 py-3 rounded-2xl mb-4 shadow-sm"
+                        className={`px-5 py-3 rounded-2xl mb-4 shadow-sm ${isCompleted ? "opacity-50 bg-gray-100" : "bg-white"}`}
                         activeOpacity={0.7}
+                        disabled={isCompleted}
                         onPress={() =>
                             navigation.navigate("MealForm", {
                                 mealPlanItemId: item.id,
@@ -269,9 +266,17 @@ export function HomePatient() {
                                     {item.name}
                                 </Text>
 
-                                <Text className="text-gray-400 mt-1">
-                                    {item.time}
-                                </Text>
+                                {/* <View className="flex-row justify-between"> */}
+                                    <Text className="text-gray-400 mt-1">
+                                        {item.time}
+                                    </Text>
+
+                                    {isCompleted && (
+                                        <Text className="text-xs text-green-600 font-semibold mt-1">
+                                        ✓ Já registrada hoje
+                                        </Text>
+                                    )}
+                                {/* </View> */}
                             </View>
 
                             <Feather name="chevron-right" size={20} color="#ccc" />
@@ -290,12 +295,12 @@ export function HomePatient() {
         />
       
         {/* BOTÃO FLUTUANTE (Refeição Livre) */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
             className="absolute bottom-6 right-6 bg-green-dark w-16 h-16 rounded-full items-center justify-center shadow-lg"
             onPress={() => navigation.navigate("MealForm")}
         >
             <Feather name="plus" size={26} color="white" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
     </SafeAreaView>
   );
 }

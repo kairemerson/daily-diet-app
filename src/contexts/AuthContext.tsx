@@ -34,8 +34,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateUser = useCallback(async (userData: StoredUser) => {
-    await updateUserStorage(userData)
-    setUser(userData)
+    const updatedUser = await updateUserStorage(userData)
+    if(updatedUser) {
+      setUser(updatedUser)
+
+    }
   }, [])
 
   async function loadUser() {

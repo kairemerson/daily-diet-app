@@ -99,194 +99,197 @@ export function PatientCreateForm() {
   return (
     <View className="flex-1 bg-white">
       <HeaderPage title="Adicionar paciente"  />
-      <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6 mt-4">
+      <View className="flex-1 bg-gray-7 rounded-t-3xl -mt-3">
 
-        <Text className="text-lg text-gray-3 font-nunito_regular mb-3">Acesso</Text>
-        <View className="">
-          <AppInput 
-            control={control}
-            name="name"
-            label="Nome"
-            placeholder="Digite seu nome"
-            icon="person-outline"
-          />
+        <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6">
 
-          <AppInput
-            name="email"
-            control={control}
-            label="E-mail"
-            placeholder="Digite seu e-mail"
-            icon="mail-outline"
-            keyboardType="email-address"
-          />
-
-          <AppInput
-            name="password"
-            control={control}
-            label="Senha"
-            placeholder="Digite a senha"
-            icon="lock-outline"
-            secureTextEntry
-          />
-
-          <Text className="text-lg text-gray-3 font-nunito_regular mt-6 mb-4">Informações do paciente</Text>
-
-          <View className="mb-5">
-            <Text className="text-gray-1 text-base font-nunito_bold mt-6 mb-2">
-              Objetivo
-            </Text>
-
-            <View className="w-[80%]">
-              <Controller
-                control={control}
-                name="goal"
-                render={({ field: { onChange, value }, fieldState: {error} }) => (
-                  <>
-                    <RadioGroup
-                      value={value}
-                      onChange={onChange}
-                      options={[
-                        { label: "Emagrecimento", value: "WEIGHT_LOSS" },
-                        { label: "Hipertrofia", value: "HYPERTROPHY" },
-                        { label: "Reeducação alimentar", value: "REEDUCATION" },
-                        { label: "Manutenção", value: "MAINTENANCE" },
-                      ]}
-                    />
-                    {error && (
-                        <Text className='text-red-dark text-xs mt-1'>
-                            {error.message}
-                        </Text>
-                    )}
-
-                  </>
-                )}
-              />
-              
-
-            </View>
-            
-          </View>
-          
-          <View className="mb-4">
-            <Text className="text-base font-nunito_bold text-gray-1 mb-1">
-              Data de nascimento
-            </Text>
-
-            <Controller
+          <Text className="text-lg text-gray-3 font-nunito_regular mb-3 mt-4">Acesso</Text>
+          <View className="">
+            <AppInput 
               control={control}
-              name="birthDate"
-              render={({ field: { onChange, value }, fieldState: {error} }) => (
-                <>
-                  <View className={`flex-row items-center bg-white rounded-md px-3 border ${error ? "border-red-dark" : "border-gray-5"}`}>
-                    <MaterialIcons
-                          name="calendar-month"
-                          size={20}
-                          color={colors.gray[4]}
-                          style={{marginRight: 8}}
-                      />
-                    <TextInput
-                      value={value}
-                      onChangeText={(text) => {
-                        const masked = formatDate(text)
-                        onChange(masked)
-                      }}
-                      keyboardType="numeric"
-                      placeholder="Ex: 99/99/9999"
-                      placeholderTextColor={colors.gray[4]}
-                      className="w-full text-gray-3"
-                    />
-                  </View>
-                
-                </>
-              )}
+              name="name"
+              label="Nome"
+              placeholder="Digite seu nome"
+              icon="person-outline"
             />
 
-          </View>
-
-          <View className="mb-4">
-            <Text className="text-base font-nunito_bold text-gray-1 mb-1">
-              Altura
-            </Text>
-            <Controller
+            <AppInput
+              name="email"
               control={control}
-              name="height"
-              render={({ field: { onChange, value }, fieldState: {error} }) => (
-                <>
+              label="E-mail"
+              placeholder="Digite seu e-mail"
+              icon="mail-outline"
+              keyboardType="email-address"
+            />
+
+            <AppInput
+              name="password"
+              control={control}
+              label="Senha"
+              placeholder="Digite a senha"
+              icon="lock-outline"
+              secureTextEntry
+            />
+
+            <Text className="text-lg text-gray-3 font-nunito_regular mt-6 mb-4">Informações do paciente</Text>
+
+            <View className="mb-5">
+              <Text className="text-gray-1 text-base font-nunito_bold mt-6 mb-2">
+                Objetivo
+              </Text>
+
+              <View className="w-[80%]">
+                <Controller
+                  control={control}
+                  name="goal"
+                  render={({ field: { onChange, value }, fieldState: {error} }) => (
+                    <>
+                      <RadioGroup
+                        value={value}
+                        onChange={onChange}
+                        options={[
+                          { label: "Emagrecimento", value: "WEIGHT_LOSS" },
+                          { label: "Hipertrofia", value: "HYPERTROPHY" },
+                          { label: "Reeducação alimentar", value: "REEDUCATION" },
+                          { label: "Manutenção", value: "MAINTENANCE" },
+                        ]}
+                      />
+                      {error && (
+                          <Text className='text-red-dark text-xs mt-1'>
+                              {error.message}
+                          </Text>
+                      )}
+
+                    </>
+                  )}
+                />
+                
+
+              </View>
+              
+            </View>
+            
+            <View className="mb-4">
+              <Text className="text-base font-nunito_bold text-gray-1 mb-1">
+                Data de nascimento
+              </Text>
+
+              <Controller
+                control={control}
+                name="birthDate"
+                render={({ field: { onChange, value }, fieldState: {error} }) => (
+                  <>
                     <View className={`flex-row items-center bg-white rounded-md px-3 border ${error ? "border-red-dark" : "border-gray-5"}`}>
-                        <MaterialIcons
-                            name="expand"
+                      <MaterialIcons
+                            name="calendar-month"
                             size={20}
                             color={colors.gray[4]}
                             style={{marginRight: 8}}
                         />
-                        <TextInput
-                          value={value}
-                          onChangeText={(text) => {
-                            const masked = formatHeight(text)
-                            onChange(masked)
-                          }}
-                          keyboardType="numeric"
-                          placeholder="Ex: 1,75"
-                          placeholderTextColor={colors.gray[4]}
-                          className="w-full text-gray-3"
-                        />
+                      <TextInput
+                        value={value}
+                        onChangeText={(text) => {
+                          const masked = formatDate(text)
+                          onChange(masked)
+                        }}
+                        keyboardType="numeric"
+                        placeholder="Ex: 99/99/9999"
+                        placeholderTextColor={colors.gray[4]}
+                        className="w-full text-gray-3"
+                      />
                     </View>
-                </>
-              )}
-            />
-          </View>
+                  
+                  </>
+                )}
+              />
 
-          <View className="mb-4">
-            <Text className="text-base font-nunito_bold text-gray-1 mb-1">
-              Peso alvo
-            </Text>
-            <Controller
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-base font-nunito_bold text-gray-1 mb-1">
+                Altura
+              </Text>
+              <Controller
+                control={control}
+                name="height"
+                render={({ field: { onChange, value }, fieldState: {error} }) => (
+                  <>
+                      <View className={`flex-row items-center bg-white rounded-md px-3 border ${error ? "border-red-dark" : "border-gray-5"}`}>
+                          <MaterialIcons
+                              name="expand"
+                              size={20}
+                              color={colors.gray[4]}
+                              style={{marginRight: 8}}
+                          />
+                          <TextInput
+                            value={value}
+                            onChangeText={(text) => {
+                              const masked = formatHeight(text)
+                              onChange(masked)
+                            }}
+                            keyboardType="numeric"
+                            placeholder="Ex: 1,75"
+                            placeholderTextColor={colors.gray[4]}
+                            className="w-full text-gray-3"
+                          />
+                      </View>
+                  </>
+                )}
+              />
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-base font-nunito_bold text-gray-1 mb-1">
+                Peso alvo
+              </Text>
+              <Controller
+                control={control}
+                name="targetWeight"
+                render={({ field: { onChange, value }, fieldState: {error} }) => (
+                  <>
+                    <View className={`flex-row items-center bg-white rounded-md px-3 border ${error ? "border-red-dark" : "border-gray-5"}`}>
+                      <MaterialIcons
+                          name="gps-fixed"
+                          size={20}
+                          color={colors.gray[4]}
+                          style={{marginRight: 8}}
+                      />
+                      <TextInput
+                        value={value}
+                        onChangeText={(text) => {
+                          const masked = formatWeight(text)
+                          onChange(masked)
+                        }}
+                        keyboardType="numeric"
+                        placeholder="Ex: 70,50"
+                        placeholderTextColor={colors.gray[4]}
+                        className="w-full text-gray-3"
+                      />
+                    </View>
+                  </>
+                )}
+              />
+            </View>
+
+            <AppInput
+              name="observation"
               control={control}
-              name="targetWeight"
-              render={({ field: { onChange, value }, fieldState: {error} }) => (
-                <>
-                  <View className={`flex-row items-center bg-white rounded-md px-3 border ${error ? "border-red-dark" : "border-gray-5"}`}>
-                    <MaterialIcons
-                        name="gps-fixed"
-                        size={20}
-                        color={colors.gray[4]}
-                        style={{marginRight: 8}}
-                    />
-                    <TextInput
-                      value={value}
-                      onChangeText={(text) => {
-                        const masked = formatWeight(text)
-                        onChange(masked)
-                      }}
-                      keyboardType="numeric"
-                      placeholder="Ex: 70,50"
-                      placeholderTextColor={colors.gray[4]}
-                      className="w-full text-gray-3"
-                    />
-                  </View>
-                </>
-              )}
+              label="Observação"
+              placeholder="Digite uma observação"
+              icon="edit-note"
+              multiline
+              className="w-full h-28 text-gray-3"
             />
+
           </View>
 
-          <AppInput
-            name="observation"
-            control={control}
-            label="Observação"
-            placeholder="Digite uma observação"
-            icon="edit-note"
-            multiline
-            className="w-full h-28 text-gray-3"
-          />
-
-        </View>
-
-        <View className="gap-3 mb-10 mt-6">
-          <Button title="Salvar" onPress={handleSubmit(onSubmit)} disabled={isPending}/>
-          <Button title="Cancelar" variant="secondary"/>
-        </View>
-            
-      </ScrollView>
+          <View className="gap-3 mb-10 mt-6">
+            <Button title="Salvar" onPress={handleSubmit(onSubmit)} disabled={isPending}/>
+            <Button title="Cancelar" variant="secondary"/>
+          </View>
+              
+        </ScrollView>
+      </View>
 
     </View>
   );
